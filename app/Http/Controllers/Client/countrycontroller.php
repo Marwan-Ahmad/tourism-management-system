@@ -19,14 +19,14 @@ class countrycontroller extends Controller
         if(!$CountriesNames){
             return response()->json([
                 "data"=>$CountriesNames,
-                'message'=>'not found any Company with this name',
+                'message'=>'not found any country with this name',
                 "status"=>404,
             ]);
         }
         else{
         return response()->json([
             "data"=>$CountriesNames,
-            'message'=>' The Company with this name',
+            'message'=>' The country with this name',
             "status"=>200,
         ]);
     }
