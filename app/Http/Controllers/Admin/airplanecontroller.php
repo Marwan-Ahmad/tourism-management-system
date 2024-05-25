@@ -10,6 +10,27 @@ use Illuminate\Support\Facades\Storage;
 
 class airplanecontroller extends Controller
 {
+
+
+        public function getcompany(){
+            $getcompany=FightCompany::query()->select('id','name','location','description')->get();
+            if($getcompany->count()>0){
+            return response()->json([
+                'data'=>$getcompany,
+                "message"=>"this is the company in your app",
+                "status"=>200,
+            ]);
+        }else{
+            return response()->json([
+                'data'=>[],
+                "message"=>"Ypu Don't have any company in your app",
+                "status"=>404,
+            ]);
+        }
+    }
+
+
+
      // To Input AirPlaneCompany
      public function InputAirPlaneCompany(Request $request){
 
@@ -26,9 +47,7 @@ class airplanecontroller extends Controller
                 "nameOfCountry"=>"required",
             ]);
 
-            $image = $request->file('photo');
-            $fileName = uniqid().'.'.$image->getClientOriginalExtension();
-            Storage::disk('public')->put($fileName, file_get_contents($image));
+
 
 
             $countrynotexists=Contrey::where('name',$request->nameOfCountry)->count();
@@ -39,6 +58,8 @@ class airplanecontroller extends Controller
                     "status"=>404,
                 ]);
             }
+
+
 
 
             $contryid=Contrey::where('name',$request->nameOfCountry)->first();
@@ -55,7 +76,9 @@ class airplanecontroller extends Controller
                     ]);
                 }
 
-
+            $image = $request->file('photo');
+            $fileName = uniqid().'.'.$image->getClientOriginalExtension();
+            Storage::disk('public')->put($fileName, file_get_contents($image));
 
             $contry=Contrey::where('name',$request->nameOfCountry)->first();
             $contry_id=$contry->id;
@@ -78,19 +101,15 @@ class airplanecontroller extends Controller
             "status"=>201,
         ]);
     }
+
+
     // TO Delete The AirPlaneCompany
     public function DropAirplaneCompany(Request $request){
         $request->validate([
-            "nameOfAirPlaneCompany"=>'required',
-            'countryname'=>'required',
-            "Location"=>"required"
+            'id'=>'nullable'
         ]);
-        $contry=Contrey::where('name',$request->countryname)->first();
-        $countryid=$contry->id;
         $AirplaneCompnay=FightCompany::query()
-        ->where('name',$request->nameOfAirPlaneCompany)
-        ->where('Country_id',$countryid)
-        ->where('location',$request->Location)
+        ->where('id',$request->id)
         ->first();
 
         if(!$AirplaneCompnay){
@@ -102,9 +121,20 @@ class airplanecontroller extends Controller
         }
 
         else{
-        FightCompany::where('name',$request->nameOfAirPlaneCompany)
-        ->where('Country_id',$countryid)
-        ->where('location',$request->Location)->delete();
+
+            $Airplanephoto=FightCompany::query()
+            ->where('id',$request->id)
+            ->first();
+
+        $oldPhotoPath = str_replace('/storage', '', $Airplanephoto->photo);
+        if (Storage::disk('public')->exists($oldPhotoPath)) {
+            Storage::disk('public')->delete($oldPhotoPath);
+        }
+
+        FightCompany::query()
+        ->where('id',$request->id)
+        ->delete();
+
 
         return response()->json([
             'data'=>$AirplaneCompnay,
@@ -117,44 +147,75 @@ class airplanecontroller extends Controller
     //To Update THe AirPlaneCompany Inormation
     public function updateAirplaneCompany(Request $request){
         $request->validate([
-            "OldName"=>"required",
-            "OldLocation"=>"required",
-            "NewName"=>"required",
-            "NewLocation"=>"required",
-            "description"=>"required",
-            "Comforts"=>"required",
-            "photo"=>"required",
-            "food"=>"required",
-            "safe"=>"required",
-            "Rate"=>"required",
-            "service"=>"required",
+            "idOldName"=>'nullable',
+            "NewName"=>'nullable',
+            "NewLocation"=>'nullable',
+            "description"=>'nullable',
+            'photo'=>'nullable',
+            "Comforts"=>'nullable',
+            "food"=>'nullable',
+            "safe"=>'nullable',
+            "Rate"=>'nullable',
+            "service"=>'nullable',
         ]);
-        $AirplaneCompnay=FightCompany::where('name',$request->OldName)
-        ->where('location',$request->OldLocation)->first();
+        $AirplaneCompnay=FightCompany::where('id',$request->idOldName)
+        ->first();
+
+
         if(!$AirplaneCompnay){
             return response()->json([
-                "status"=>"200",
-                "messgae"=>"the company not found "
-            ]);
+                'data'=>[],
+                "messgae"=>"the company not found and if you do not need to update the information please enter just the old name and the old location  ",
+                "status"=>404,
+            ],404);
         }
 
         else{
 
-        FightCompany::where('name',$request->OldName)->where('location',$request->OldLocation)->
-        update([
-            'name'=>$request->NewName,
-            'location'=>$request->NewLocation,
-            'description'=>$request->description,
-            'Comforts'=>$request->Comforts,
-            'food'=>$request->food,
-            'safe'=>$request->safe,
-            'Rate'=>$request->Rate,
-            'service'=>$request->service,
+
+            if(FightCompany::query()->where('name',$request->NewName)->where('id','!=',$AirplaneCompnay->id)->first()){
+                return response()->json([
+                    'Data'=>[],
+                    "message"=>"the name of country you use it is exists before",
+                    "satuts"=>400,
+                ],400);
+            }
+
+            if ($request->hasFile('photo')) {
+                $oldPhotoPath = str_replace('/storage', '', $AirplaneCompnay->photo);
+                if (Storage::disk('public')->exists($oldPhotoPath)) {
+                    Storage::disk('public')->delete($oldPhotoPath);
+                }
+
+                $image = $request->file('photo');
+                $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+                Storage::disk('public')->put($fileName, file_get_contents($image));
+                $photoPath = Storage::url($fileName);
+            } else {
+
+                $photoPath = $AirplaneCompnay->photo;
+            }
+
+        FightCompany::where('id',$request->idOldName)
+        ->update([
+            'name'=>$request->NewName??$AirplaneCompnay->name,
+            'location'=>$request->NewLocation??$AirplaneCompnay->location,
+            'description'=>$request->description??$AirplaneCompnay->description,
+            'Comforts'=>$request->Comforts??$AirplaneCompnay->Comforts,
+            'food'=>$request->food??$AirplaneCompnay->food,
+            'safe'=>$request->safe??$AirplaneCompnay->safe,
+            'Rate'=>$request->Rate??$AirplaneCompnay->Rate,
+            'service'=>$request->service??$AirplaneCompnay->service,
+            'photo'=>$photoPath
         ]) ;
+        $AirplaneCompnaynew=FightCompany::where('name',$request->NewName??$AirplaneCompnay->name)
+        ->where('location',$request->NewLocation??$AirplaneCompnay->location)
+        ->first();
 
         return response()->json([
-            "status"=>"200",
-            "messgae"=>"the company Informatino is Update"
+            'data'=>$AirplaneCompnaynew,
+            "messgae"=>"the company is updated",
+            "status"=>200,
         ]);
     }
 

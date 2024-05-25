@@ -62,9 +62,9 @@ class countrycontroller extends Controller
     //To Delete Country From The App
     public function DropCountry(Request $request){
         $request->validate([
-            "name"=>"required"
+            "id"=>"nullable"
         ]);
-        $countrey=Contrey::where('name',$request->name)->first();
+        $countrey=Contrey::where('id',$request->id)->first();
         if(!$countrey){
             return response()->json([
                 'Data'=>[],
@@ -73,13 +73,13 @@ class countrycontroller extends Controller
             ]);
         }
         else{
-        $country=Contrey::query()->where('name',$request->name)->first();
+        $country=Contrey::query()->where('id',$request->id)->first();
 
         $oldPhotoPath = str_replace('/storage', '', $country->photo);
         if (Storage::disk('public')->exists($oldPhotoPath)) {
             Storage::disk('public')->delete($oldPhotoPath);
         }
-        Contrey::query()->where('name',$request->name)->delete();
+        Contrey::query()->where('id',$request->id)->delete();
         return response()->json([
             'Data'=>$country,
             "message"=>"the Countrey deleted",
@@ -91,36 +91,43 @@ class countrycontroller extends Controller
     //To Update The Information Of The country
     public function UpdateInformationContrey(Request $request){
         $request->validate([
-            'OldName'=>'required',
-            'NewName'=>'required',
-            'photo'=>'required',
-            'Rate'=>'required',
+            'idOldName'=>'nullable',
+            'NewName'=>'nullable',
+            'Rate'=>'nullable',
+            'photo'=>'nullable',
         ]);
 
 
-        $countryexist=Contrey::query()->where('name',$request->OldName)->first();
+        $countryexist=Contrey::query()->where('id',$request->idOldName)->first();
         if($countryexist){
 
-            if(Contrey::query()->where('name',$request->NewName)->first()){
+            if(Contrey::query()->where('name',$request->NewName)->where('id','!=',$countryexist->id)->first()){
                 return response()->json([
                     'Data'=>[],
                     "message"=>"the name of country you use it is exists before",
                     "satuts"=>400,
                 ],400);
             }
-        $oldPhotoPath = str_replace('/storage', '', $countryexist->photo);
-        if (Storage::disk('public')->exists($oldPhotoPath)) {
-            Storage::disk('public')->delete($oldPhotoPath);
-        }
-            $image = $request->file('photo');
-        $fileName = uniqid().'.'.$image->getClientOriginalExtension();
-        Storage::disk('public')->put($fileName, file_get_contents($image));
-        Contrey::where('name',$request->OldName)->update([
-            'name'=>$request->NewName,
-            'Rate'=>$request->Rate,
-            'photo'=> Storage::url($fileName)
+            if ($request->hasFile('photo')) {
+                $oldPhotoPath = str_replace('/storage', '', $countryexist->photo);
+                if (Storage::disk('public')->exists($oldPhotoPath)) {
+                    Storage::disk('public')->delete($oldPhotoPath);
+                }
+
+                $image = $request->file('photo');
+                $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+                Storage::disk('public')->put($fileName, file_get_contents($image));
+                $photoPath = Storage::url($fileName);
+            } else {
+
+                $photoPath = $countryexist->photo;
+            }
+        Contrey::where('id',$request->idOldName)->update([
+            'name'=>$request->NewName ?? $countryexist->name,
+            'Rate'=>$request->Rate??$countryexist->Rate,
+            'photo'=> $photoPath
         ]);
-        $newcountry=Contrey::query()->where('name',$request->NewName)->first();
+        $newcountry=Contrey::query()->where('name',$request->NewName??$countryexist->name)->first();
         return response()->json([
             'Data'=>$newcountry,
             "message"=>"updated is finished",
@@ -129,7 +136,7 @@ class countrycontroller extends Controller
     }else{
         return response()->json([
             'Data'=>[],
-            "message"=>"The country you try to update not exist",
+            "message"=>"The country you try to update not exist please just enter a old name if you do not need to update any things",
             "satuts"=>404,
         ]);
     }

@@ -14,7 +14,7 @@ class FightCompany extends Model
     protected $fillable=['name','location','description','photo','food','service',
     'Comforts','safe','familier'];
     public $timestamp=true;
-    protected $hidden=['created_at','updated_at','fight_company_id'];
+    protected $hidden=['created_at','updated_at',];
 
     public function contrey(){
         return $this->belongsTo('App\Models\Contrey','Country_id');

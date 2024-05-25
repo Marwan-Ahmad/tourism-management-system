@@ -22,8 +22,8 @@ class authcontroller extends Controller
             return response()->json([
                 'Data'=>[],
                 'Massage'=>'The email or password is Not Correct please try again',
-                'status'=>500
-            ],500);
+                'status'=>401
+            ],401);
         }
                     $info=User::where('email',$request->email)->first();
                     $token=$info->createToken("auth_token")->plainTextToken;

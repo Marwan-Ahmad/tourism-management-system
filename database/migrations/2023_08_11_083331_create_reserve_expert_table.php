@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('reserve_expert', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('users_id')->constrained('users');
-            $table->foreignId('expert_id')->constrained('expert');
+            $table->foreignId('users_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('expert_id')->constrained('expert')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('Gendor');
             $table->string('FirstDay');
             $table->string('LastDay');

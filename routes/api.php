@@ -53,9 +53,11 @@ Route::post('DropCountry',[countrycontroller::class,'DropCountry']);
 Route::post('UpdateInformationContrey',[countrycontroller::class,'UpdateInformationContrey']);
 
 // admin airplane
+Route::get('getcompany',[airplanecontroller::class,'getcompany']);
 Route::post('InputAirPlaneCompany',[airplanecontroller::class,'InputAirPlaneCompany']);
 Route::post('updateAirplaneCompany',[airplanecontroller::class,'updateAirplaneCompany']);
 Route::post('DropAirplaneCompany',[airplanecontroller::class,'DropAirplaneCompany']);
+
 
 // admin flight trip
 Route::post('InputFlightTrip',[flighttripcontroller::class,'InputFlightTrip']);
@@ -96,7 +98,7 @@ Route::get('ReturnCountrey',[ClientCountrycontroller::class,'ReturnCountrey']);
 // client information ait plane company
 Route::post('SearchAboutAirPlaneCompany',[ClientAirplanecontroller::class,'SearchAboutAirPlaneCompany']);
 Route::get('GetDescrrptionrAirPlanes',[ClientAirplanecontroller::class,'GetDescrrptionrAirPlanes']);
-Route::post('GetCounterWithAirPlanes',[ClientAirplanecontroller::class,'GetCounterWithAirPlanes']);
+Route::get('GetCounterWithAirPlanes',[ClientAirplanecontroller::class,'GetCounterWithAirPlanes']);
 Route::post('ServiceOfCompnayAirplane',[ClientAirplanecontroller::class,'ServiceOfCompnayAirplane']);
 
 // client information trip and company for trip
@@ -141,6 +143,7 @@ Route::post('CheckBookingActivity',[bookingscontroller::class,'CheckBookingActiv
 //client and admin[profile and logout]in middlewar becouse they need token todothis
 Route::group(["middleware"=>["auth:sanctum"]],function(){
     Route::get('ProfileClient',[profilecontroller::class,'Profile']);
+    Route::post('updateclientprofile',[profilecontroller::class,'updateclientprofile']);
     Route::get('logoutAdmin',[authcontroller::class,'logout']);
     Route::get('logoutClient',[ClientAuthcontroller::class,'logout']);
 

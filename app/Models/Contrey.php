@@ -15,9 +15,9 @@ class Contrey extends Model
     protected $table="country";
     protected $fillable=['name','Rate',];
     public $timestamp=true;
-    protected $hidden=['created_at','updated_at','id','deleted_at'];
-    
-    public function Airplanes(){
+    protected $hidden=['created_at','updated_at','deleted_at'];
+
+    public function Airplanescompany(){
         return $this->hasMany('App\Models\FightCompany','Country_id');
     }
     public function Hotels(){

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('service');
             $table->string('Comforts');
             $table->string('safe');
-            $table->foreignId('Country_id')->constrained('Country');
+            $table->foreignId('Country_id')->constrained('Country')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

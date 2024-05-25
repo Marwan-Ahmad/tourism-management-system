@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('expert', function (Blueprint $table) {
-            $table->id(); 
+            $table->id();
             $table->string('name');
             $table->string('location');
             $table->string('descreption');
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('Experience');
             $table->string('Eduction');
             $table->string('Rate');
-            $table->foreignId('Country_id')->constrained('Country');
+            $table->foreignId('Country_id')->constrained('Country')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

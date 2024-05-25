@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('reserve_tripe', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('users_id')->constrained('users');
-            $table->foreignId('fight_air_planes_id')->constrained('fight_air_planes');
+            $table->foreignId('users_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('fight_air_planes_id')->constrained('fight_air_planes')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string("fatherName");
             $table->string("MotherName");
             $table->string("Gendor");

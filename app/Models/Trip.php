@@ -11,6 +11,6 @@ class Trip extends Model
     protected $table="fight_air_planes";
     protected $fillable=['TripPlace','Towards','DayOfTheTrip','MonthOfTheTrip','TimeOfTheTrip','Price'];
     public $timestamp=true;
-    protected $hidden=['created_at','updated_at','fight_company_id'];
-    
+    protected $hidden=['created_at','updated_at'];
+
 }

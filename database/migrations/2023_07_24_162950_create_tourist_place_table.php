@@ -24,7 +24,7 @@ return new class extends Migration
             $table->String('safe');
             $table->String('food');
             $table->String('Rate');
-            $table->foreignId('Country_id')->constrained('Country');
+            $table->foreignId('Country_id')->constrained('Country')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

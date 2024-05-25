@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string("MonthOfTheTrip");
             $table->string("TimeOfTheTrip");
             $table->string("Price");
-            $table->foreignId('fight_company_id')->constrained('fight_company');
+            $table->foreignId('fight_company_id')->constrained('fight_company')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

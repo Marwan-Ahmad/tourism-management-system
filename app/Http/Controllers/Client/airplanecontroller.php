@@ -10,78 +10,83 @@ use Illuminate\Support\Facades\Storage;
 
 class airplanecontroller extends Controller
 {
-    //Get COuntry With AirPlane
-    public function GetCounterWithAirPlanes(Request $request){
-        $request->validate([
-            "NameOfCountry"=>'required'
-        ]);
+    //Get Country With AirPlane
+    public function GetCounterWithAirPlanes(){
+
         $CounterWithAirPlanes=new Contrey();
-        $CounterWithAirPlanes=Contrey::with(['Airplanes'=>function($q){
+        $CounterWithAirPlanes=Contrey::with(['Airplanescompany'=>function($q){
             $q->select(['name','location','description','photo','Rate','id'
             ,'Country_id','food','service','Comforts','safe','id','Country_id']);
-        }])->where('name',$request->NameOfCountry)->get();
-        $Services=Contrey::with(['Airplanes'=>function($q){
-            $q->select(['food','service','Comforts','safe','id','Country_id']);
-        }])->where('name',$request->NameOfCountry)->get();
-        // $CounterWithAirPlanes.= $Services;
+        }])->get();
+        if(FightCompany::query()->count()>0){
         return response()->json([
-            "sattus"=>"200",
-            "Countries"=>$CounterWithAirPlanes,
+            "data"=>$CounterWithAirPlanes,
+            'message'=>'there are the company with the releated country',
+            "sattus"=>200,
         ]);
+      }else{
+        return response()->json([
+            "data"=>[],
+            'message'=>'not found any compamy',
+            "sattus"=>404,
+        ]);
+      }
     }
 
     //Search About AirPlane
     public function SearchAboutAirPlaneCompany(Request $request){
         $request->validate([
-            "nameOfCountrey"=>"required",
-            "nameOfCompany"=>"required"
+            "nameOfCompany"=>"required",
+            "nameOfCountry"=>"required",
         ]);
          $nameOfCompany=$request->nameOfCompany;
-        $CounterWithAirPlanes=Contrey::with(['Airplanes'=>function($q)use($nameOfCompany){
+        $CounterWithAirPlanes=Contrey::with(['Airplanescompany'=>function($q)use($nameOfCompany){
             $q->select(['name','location','description','photo','Country_id','food','service',
             'Comforts','safe','Rate'])
-            ->where('name',$nameOfCompany);}])->where("name",$request->nameOfCountrey)->first();
+            ->where('name',$nameOfCompany);}])->where("name",$request->nameOfCountry)->first();
+
         if(!$CounterWithAirPlanes){
             return response()->json([
-                "status"=>"200",
-                "data"=>"not found any Company with this name"
+                "data"=>[],
+                'message'=>'not found',
+                "sattus"=>404,
             ]);
         }
 
         return response()->json([
-            "status"=>"200",
-            "data"=>$CounterWithAirPlanes
+            "data"=>$CounterWithAirPlanes,
+            'message'=>'this is the company with the releated country',
+            "sattus"=>200,
         ]);
     }
 
     //Get Description for Air Plane
-    public function GetDescrrptionrAirPlanes(){
-
-        $CounterWithAirPlanes=new Contrey();
-        $CounterWithAirPlanes=Contrey::with(['Airplanes'])->get();
-        return response()->json([
-            "sattus"=>"200",
-            "Countries"=>$CounterWithAirPlanes
-        ]);
-    }
+    // public function GetDescrrptionrAirPlanes(){
+    //     $CounterWithAirPlanes=new Contrey();
+    //     $CounterWithAirPlanes=Contrey::with(['Airplanescompany'])->get();
+    //     return response()->json([
+    //         "sattus"=>"200",
+    //         "Countries"=>$CounterWithAirPlanes
+    //     ]);
+    // }
 
     //Service of Air Plane
-    public function ServiceOfCompnayAirplane(Request $request){
-        $request->validate([
-            "IdOfCompany"=>"required"
-        ]);
-        $service=FightCompany::where('id',$request->IdOfCompany)->Select('food','service',
-        'Comforts','safe')->first();
-        if(!$service){
-            return response()->json([
-                "sattus"=>"200",
-                "Message"=>"not found any Company with this id"
-            ]);
-        }
-        return response()->json([
-            "sattus"=>"200",
-            "Service"=>$service
-        ]);
-    }
+    // public function ServiceOfCompnayAirplane(Request $request){
+    //     $request->validate([
+    //         "IdOfCompany"=>"required"
+    //     ]);
+    //     $service=FightCompany::where('id',$request->IdOfCompany)->Select('food','service',
+    //     'Comforts','safe')->first();
+    //     if(!$service){
+    //         return response()->json([
+    //             "sattus"=>"200",
+    //             "Message"=>"not found any Company with this id"
+    //         ]);
+    //     }
+    //     return response()->json([
+    //         "sattus"=>"200",
+    //         "Service"=>$service
+    //     ]);
+    // }
 
 }

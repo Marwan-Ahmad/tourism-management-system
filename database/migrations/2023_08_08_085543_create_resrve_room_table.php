@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('Meal');
             $table->string('FirstDay');
             $table->string('LastDay');
-            $table->foreignId('users_id')->constrained('users');
-            $table->foreignId('hotel_id')->constrained('hotel');
+            $table->foreignId('users_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('hotel_id')->constrained('hotel')->cascadeOnUpdate();
             $table->timestamps();
         });
     }
