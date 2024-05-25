@@ -41,7 +41,7 @@ class airplanecontroller extends Controller
         ]);
          $nameOfCompany=$request->nameOfCompany;
         $CounterWithAirPlanes=Contrey::with(['Airplanescompany'=>function($q)use($nameOfCompany){
-            $q->select(['name','location','description','photo','Country_id','food','service',
+            $q->select(['id','Country_id','name','location','description','photo','food','service',
             'Comforts','safe','Rate'])
             ->where('name',$nameOfCompany);}])->where("name",$request->nameOfCountry)->first();
 

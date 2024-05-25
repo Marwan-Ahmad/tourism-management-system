@@ -97,9 +97,9 @@ Route::get('ReturnCountrey',[ClientCountrycontroller::class,'ReturnCountrey']);
 
 // client information ait plane company
 Route::post('SearchAboutAirPlaneCompany',[ClientAirplanecontroller::class,'SearchAboutAirPlaneCompany']);
-Route::get('GetDescrrptionrAirPlanes',[ClientAirplanecontroller::class,'GetDescrrptionrAirPlanes']);
+//Route::get('GetDescrrptionrAirPlanes',[ClientAirplanecontroller::class,'GetDescrrptionrAirPlanes']);
 Route::get('GetCounterWithAirPlanes',[ClientAirplanecontroller::class,'GetCounterWithAirPlanes']);
-Route::post('ServiceOfCompnayAirplane',[ClientAirplanecontroller::class,'ServiceOfCompnayAirplane']);
+//Route::post('ServiceOfCompnayAirplane',[ClientAirplanecontroller::class,'ServiceOfCompnayAirplane']);
 
 // client information trip and company for trip
 Route::post('getCompanyWithTrips',[ClientFlighttripcontroller::class,'getCompanyWithTrips']);
