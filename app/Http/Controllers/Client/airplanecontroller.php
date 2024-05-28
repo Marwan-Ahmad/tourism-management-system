@@ -11,17 +11,18 @@ use Illuminate\Support\Facades\Storage;
 class airplanecontroller extends Controller
 {
     //Get Country With AirPlane
-    public function GetCounterWithAirPlanes(){
+    public function GetAirPlanesCompany(){
 
         $CounterWithAirPlanes=new Contrey();
-        $CounterWithAirPlanes=Contrey::with(['Airplanescompany'=>function($q){
-            $q->select(['name','location','description','photo','Rate','id'
-            ,'Country_id','food','service','Comforts','safe','id','Country_id']);
-        }])->get();
+        $CounterWithAirPlanes=FightCompany::query()->get();
+
+        $CounterWithAirPlanes->each(function ($item) {
+            $item->photo = url($item->photo);
+        });
         if(FightCompany::query()->count()>0){
         return response()->json([
             "data"=>$CounterWithAirPlanes,
-            'message'=>'there are the company with the releated country',
+            'message'=>'there are the company',
             "sattus"=>200,
         ]);
       }else{
@@ -37,30 +38,26 @@ class airplanecontroller extends Controller
     public function SearchAboutAirPlaneCompany(Request $request){
         $request->validate([
             "nameOfCompany"=>"required",
-            "nameOfCountry"=>"required",
+            //"nameOfCountry"=>"required",
         ]);
-         $nameOfCompany=$request->nameOfCompany;
-        $CounterWithAirPlanes=Contrey::with(['Airplanescompany'=>function($q)use($nameOfCompany){
-            $q->select(['id','Country_id','name','location','description','photo','food','service',
-            'Comforts','safe','Rate'])
-            ->where('name',$nameOfCompany);}])->where("name",$request->nameOfCountry)->first();
-
+        $CounterWithAirPlanes=FightCompany::query()->where('name',$request->nameOfCompany)->first();
         if(!$CounterWithAirPlanes){
             return response()->json([
                 "data"=>[],
                 'message'=>'not found',
                 "sattus"=>404,
-            ]);
+            ],404);
         }
-
+        $CounterWithAirPlanes->photo = url($CounterWithAirPlanes->photo);
         return response()->json([
             "data"=>$CounterWithAirPlanes,
-            'message'=>'this is the company with the releated country',
+            'message'=>'this is the company with your search',
             "sattus"=>200,
         ]);
     }
+}
 
-    //Get Description for Air Plane
+//Get Description for Air Plane
     // public function GetDescrrptionrAirPlanes(){
     //     $CounterWithAirPlanes=new Contrey();
     //     $CounterWithAirPlanes=Contrey::with(['Airplanescompany'])->get();
@@ -88,5 +85,3 @@ class airplanecontroller extends Controller
     //         "Service"=>$service
     //     ]);
     // }
-
-}

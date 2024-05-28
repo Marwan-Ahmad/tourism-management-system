@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\countrycontroller;
 use App\Http\Controllers\Admin\expertcontroller;
 use App\Http\Controllers\Admin\flighttripcontroller;
 use App\Http\Controllers\Admin\hotelcontroller;
+use App\Http\Controllers\Admin\profilecontroller as AdminProfilecontroller;
 use App\Http\Controllers\Admin\touristplacecontroller;
 use App\Http\Controllers\client\activatycontroller as ClientActivatycontroller;
 use App\Http\Controllers\client\airplanecontroller as ClientAirplanecontroller;
@@ -21,6 +22,8 @@ use App\Http\Controllers\client\touristplacecontroller as ClientTouristplacecont
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Torism;
+use GuzzleHttp\Client;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -47,6 +50,7 @@ use App\Http\Controllers\Torism;
 #############################ADMIN########################################
 Route::post('loginAdmin',[authcontroller::class,'login']);
 // admin country
+Route::group(["middleware"=>["auth:sanctum"]],function(){
 Route::get('ReturnCountreyForAdmin',[countrycontroller::class,'ReturnCountrey']);
 Route::post('InputCountry',[countrycontroller::class,'InputCountry']);
 Route::post('DropCountry',[countrycontroller::class,'DropCountry']);
@@ -60,6 +64,7 @@ Route::post('DropAirplaneCompany',[airplanecontroller::class,'DropAirplaneCompan
 
 
 // admin flight trip
+Route::get('gettrip',[flighttripcontroller::class,'gettrip']);
 Route::post('InputFlightTrip',[flighttripcontroller::class,'InputFlightTrip']);
 Route::post('DropFlightTrip',[flighttripcontroller::class,'DropFlightTrip']);
 Route::post('UpdateFlightTrip',[flighttripcontroller::class,'UpdateFlightTrip']);
@@ -85,6 +90,12 @@ Route::post('DropActivtiy',[activatycontroller::class,'DropActivtiy']);
 Route::post('UpdateInformationActivity',[activatycontroller::class,'UpdateInformationActivity']);
 
 
+Route::get('adminProfile',[AdminProfilecontroller::class,'adminProfile']);
+Route::post('updateadminprofile',[AdminProfilecontroller::class,'updateadminprofile']);
+
+Route::get('logoutAdmin',[authcontroller::class,'logout']);
+
+});
 
 
 ###############################CLIENT###########################################
@@ -92,18 +103,29 @@ Route::post('register',[ClientAuthcontroller::class,'register']);
 
 Route::post('loginClient',[ClientAuthcontroller::class,'login']);
 // client information country
+Route::group(["middleware"=>["auth:sanctum"]],function(){
 Route::post('SearchAboutContrey',[ClientCountrycontroller::class,'SearchAboutContrey']);
 Route::get('ReturnCountrey',[ClientCountrycontroller::class,'ReturnCountrey']);
 
 // client information ait plane company
 Route::post('SearchAboutAirPlaneCompany',[ClientAirplanecontroller::class,'SearchAboutAirPlaneCompany']);
 //Route::get('GetDescrrptionrAirPlanes',[ClientAirplanecontroller::class,'GetDescrrptionrAirPlanes']);
-Route::get('GetCounterWithAirPlanes',[ClientAirplanecontroller::class,'GetCounterWithAirPlanes']);
+Route::get('GetAirPlanesCompany',[ClientAirplanecontroller::class,'GetAirPlanesCompany']);
 //Route::post('ServiceOfCompnayAirplane',[ClientAirplanecontroller::class,'ServiceOfCompnayAirplane']);
 
+
 // client information trip and company for trip
-Route::post('getCompanyWithTrips',[ClientFlighttripcontroller::class,'getCompanyWithTrips']);
+Route::get('gettripclient',[Clientflighttripcontroller::class,'gettrip']);
+Route::get('GetReserveTrip',[Clientflighttripcontroller::class,'GetReserveTrip']);
+
+
 Route::post('ResveFightTrip',[ClientFlighttripcontroller::class,'ResveFightTrip']);
+Route::post('DeleteReserveTrip',[ClientFlighttripcontroller::class,'DeleteReserveTrip']);
+Route::post('UpdateInfoReserve',[ClientFlighttripcontroller::class,'UpdateInfoReserve']);
+
+
+
+Route::post('getCompanyORCountryWithTrips',[ClientFlighttripcontroller::class,'getCompanyORCountryWithTrips']);
 
 
 
@@ -141,10 +163,9 @@ Route::post('CheckBookingActivity',[bookingscontroller::class,'CheckBookingActiv
 
 
 //client and admin[profile and logout]in middlewar becouse they need token todothis
-Route::group(["middleware"=>["auth:sanctum"]],function(){
+
     Route::get('ProfileClient',[profilecontroller::class,'Profile']);
     Route::post('updateclientprofile',[profilecontroller::class,'updateclientprofile']);
-    Route::get('logoutAdmin',[authcontroller::class,'logout']);
     Route::get('logoutClient',[ClientAuthcontroller::class,'logout']);
 
 }

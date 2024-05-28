@@ -29,4 +29,8 @@ class Contrey extends Model
     public function Experts(){
         return $this->hasMany('App\Models\Expert','Country_id');
     }
+
+    public function trip(){
+        return $this->hasMany('Trip','Country_id');
+    }
 }

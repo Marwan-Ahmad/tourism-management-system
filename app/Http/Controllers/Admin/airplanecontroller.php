@@ -13,7 +13,7 @@ class airplanecontroller extends Controller
 
 
         public function getcompany(){
-            $getcompany=FightCompany::query()->select('id','name','location','description')->get();
+            $getcompany=FightCompany::query()->get();
             if($getcompany->count()>0){
             return response()->json([
                 'data'=>$getcompany,
@@ -220,4 +220,5 @@ class airplanecontroller extends Controller
     }
 
     }
+
 }

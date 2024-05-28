@@ -9,8 +9,18 @@ class Trip extends Model
 {
     use HasFactory;
     protected $table="fight_air_planes";
-    protected $fillable=['TripPlace','Towards','DayOfTheTrip','MonthOfTheTrip','TimeOfTheTrip','Price'];
+    protected $fillable=['TripPlace','Towards','TimeTrip','Price','country_id','fight_company_id'];
     public $timestamp=true;
     protected $hidden=['created_at','updated_at'];
 
+
+
+    public function country(){
+        return $this->belongsTo('App\Models\Contrey','country_id');
+    }
+
+
+    public function company(){
+        return $this->belongsTo('App\Models\FightCompany','fight_company_id');
+    }
 }

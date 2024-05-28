@@ -24,6 +24,8 @@ class countrycontroller extends Controller
             ]);
         }
         else{
+            $CountriesNames->photo = url($CountriesNames->photo);
+
         return response()->json([
             "data"=>$CountriesNames,
             'message'=>' The country with this name',
@@ -42,6 +44,9 @@ class countrycontroller extends Controller
                 "status"=>404,
             ]);
        }else{
+        $countrey->each(function ($item) {
+            $item->photo = url($item->photo);
+        });
         return response()->json([
             "data"=>$countrey,
             'message'=>'This The country in your app',

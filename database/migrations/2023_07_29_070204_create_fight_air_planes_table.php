@@ -15,11 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string("TripPlace");
             $table->string("Towards");
-            $table->string("DayOfTheTrip");
-            $table->string("MonthOfTheTrip");
-            $table->string("TimeOfTheTrip");
+            $table->dateTime('TimeTrip');
             $table->string("Price");
             $table->foreignId('fight_company_id')->constrained('fight_company')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('country_id')->constrained('country')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
