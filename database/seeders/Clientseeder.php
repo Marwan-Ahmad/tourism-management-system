@@ -19,7 +19,7 @@ class Clientseeder extends Seeder
             'visaphoto'=>"D:\MY THINGS\image\wallpaperbetter.com_7680x4320.jpg",
             'phone'=>'0938156383',
             'email'=>'meroahmad@gmail.com',
-            'password'=>bcrypt('123456789'),
+            'password'=>bcrypt('8220168Aa'),
             'Nationalty'=>'syrian',
             'role'=>'client'
         ]);

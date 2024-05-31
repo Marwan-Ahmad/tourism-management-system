@@ -38,6 +38,8 @@ class User extends Authenticatable
     public function Rserveactivity(){
         return $this->belongsToMany('App\Models\Activity','reserve_activity','users_id','activity_id');
     }
+
+
     /**
      * The attributes that should be hidden for serialization.
      *

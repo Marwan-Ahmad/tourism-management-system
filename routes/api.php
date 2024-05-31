@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\activatycontroller;
 use App\Http\Controllers\Admin\airplanecontroller;
 use App\Http\Controllers\Admin\authcontroller;
+use App\Http\Controllers\Admin\BalanceController;
 use App\Http\Controllers\Admin\countrycontroller;
 use App\Http\Controllers\Admin\expertcontroller;
 use App\Http\Controllers\Admin\flighttripcontroller;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Admin\touristplacecontroller;
 use App\Http\Controllers\client\activatycontroller as ClientActivatycontroller;
 use App\Http\Controllers\client\airplanecontroller as ClientAirplanecontroller;
 use App\Http\Controllers\client\authcontroller as ClientAuthcontroller;
+use App\Http\Controllers\client\BalanceController as ClientBalanceController;
 use App\Http\Controllers\client\bookingscontroller;
 use App\Http\Controllers\client\countrycontroller as ClientCountrycontroller;
 use App\Http\Controllers\client\expertcontroller as ClientExpertcontroller;
@@ -93,6 +95,13 @@ Route::post('UpdateInformationActivity',[activatycontroller::class,'UpdateInform
 Route::get('adminProfile',[AdminProfilecontroller::class,'adminProfile']);
 Route::post('updateadminprofile',[AdminProfilecontroller::class,'updateadminprofile']);
 
+
+//account api balance
+Route::get('getClientsAccount',[BalanceController::class,'getClientsAccount']);
+Route::post('CreateAccountForClient',[BalanceController::class,'CreateAccountForClient']);
+Route::post('DeleteAccountClient',[BalanceController::class,'DeleteAccountClient']);
+Route::post('UpdateClientAccount',[BalanceController::class,'UpdateClientAccount']);
+
 Route::get('logoutAdmin',[authcontroller::class,'logout']);
 
 });
@@ -119,7 +128,7 @@ Route::get('gettripclient',[Clientflighttripcontroller::class,'gettrip']);
 Route::get('GetReserveTrip',[Clientflighttripcontroller::class,'GetReserveTrip']);
 
 
-Route::post('ResveFightTrip',[ClientFlighttripcontroller::class,'ResveFightTrip']);
+Route::post('ResveFlightTrip',[ClientFlighttripcontroller::class,'ResveFlightTrip']);
 Route::post('DeleteReserveTrip',[ClientFlighttripcontroller::class,'DeleteReserveTrip']);
 Route::post('UpdateInfoReserve',[ClientFlighttripcontroller::class,'UpdateInfoReserve']);
 
@@ -167,6 +176,13 @@ Route::post('CheckBookingActivity',[bookingscontroller::class,'CheckBookingActiv
     Route::get('ProfileClient',[profilecontroller::class,'Profile']);
     Route::post('updateclientprofile',[profilecontroller::class,'updateclientprofile']);
     Route::get('logoutClient',[ClientAuthcontroller::class,'logout']);
+
+    //myaccount
+    Route::get('getmyaccount',[ClientBalanceController::class,'getmyaccount']);
+
+
+
+
 
 }
 );

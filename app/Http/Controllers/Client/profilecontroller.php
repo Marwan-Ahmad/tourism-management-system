@@ -5,6 +5,7 @@ namespace App\Http\Controllers\client;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class profilecontroller extends Controller
@@ -41,13 +42,13 @@ class profilecontroller extends Controller
         ]);
         $userinfo=auth()->user();
         if($userinfo){
-            if ($request->hasFile('photo')) {
+            if ($request->hasFile('visaphoto')) {
                 $oldPhotoPath = str_replace('/storage', '', $userinfo->visaphoto);
                 if (Storage::disk('public')->exists($oldPhotoPath)) {
                     Storage::disk('public')->delete($oldPhotoPath);
                 }
 
-                $image = $request->file('photo');
+                $image = $request->file('visaphoto');
                 $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
                 Storage::disk('public')->put($fileName, file_get_contents($image));
                 $photoPath = Storage::url($fileName);
@@ -77,11 +78,14 @@ class profilecontroller extends Controller
                 'phone'=>$request->phone??$userinfo->phone,
                 'Nationalty'=>$request->Nationalty??$userinfo->Nationalty,
                 'email'=>$request->email??$userinfo->email,
-                'password'=>bcrypt($request->password??$userinfo->password)
+                'password'=>$request->password ? Hash::make($request->password) : $userinfo->password,
             ]);
 
             $usernew = User::query()->where('id',$userinfo->id)->first();
 
+         // هنا يمكنك إعادة الرمز المميز الجديد إذا كنت تستخدم Laravel Sanctum
+        // $usernew->tokens()->delete();
+        // $token = $usernew->createToken('authToken')->plainTextToken;
 
             return response()->json([
                 "data"=>$usernew,

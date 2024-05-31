@@ -9,7 +9,7 @@ class Trip extends Model
 {
     use HasFactory;
     protected $table="fight_air_planes";
-    protected $fillable=['TripPlace','Towards','TimeTrip','Price','country_id','fight_company_id'];
+    protected $fillable=['TripPlace','Towards','TimeTrip','Price','country_id','fight_company_id','amountpeople'];
     public $timestamp=true;
     protected $hidden=['created_at','updated_at'];
 

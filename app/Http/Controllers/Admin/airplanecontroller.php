@@ -24,7 +24,7 @@ class airplanecontroller extends Controller
             return response()->json([
                 'data'=>[],
                 "message"=>"Ypu Don't have any company in your app",
-                "status"=>404,
+                "status"=>200,
             ]);
         }
     }

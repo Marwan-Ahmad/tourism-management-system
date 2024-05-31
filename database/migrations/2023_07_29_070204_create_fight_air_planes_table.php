@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string("TripPlace");
             $table->string("Towards");
             $table->dateTime('TimeTrip');
-            $table->string("Price");
+            $table->integer("Price");
+            $table->integer('amountpeople');
             $table->foreignId('fight_company_id')->constrained('fight_company')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('country_id')->constrained('country')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();

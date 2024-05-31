@@ -19,7 +19,7 @@ class countrycontroller extends Controller
             return response()->json([
                 "data"=>$countrey,
                 'message'=>'There is no country to show it',
-                "status"=>404,
+                "status"=>200,
             ]);
        }else{
         return response()->json([

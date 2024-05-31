@@ -57,17 +57,9 @@ class authcontroller extends Controller
     public function login(Request $request){
         $request->validate([
             "email"=>'required|email',
-            "password"=>'required'
+            "password"=>'required|between:8,16'
           ]);
-          $jsondecode=json_decode($request->password);
-          if(strlen($jsondecode) <8 || strlen($jsondecode)>16){
-            return response()->json([
-                'Data'=>[],
-                'Massage'=>'The  password must be between 8 and 16 please try again',
-                'status'=>422
-            ],422);
-        }
-        else{
+
             $data=[];
           if(!auth()->attempt($request->only(['email','password']))){
               return response()->json([
@@ -84,7 +76,7 @@ class authcontroller extends Controller
                       'message'=>'login succesfuly',
                       'status'=>200
                   ]);
-        }
+
     }
 
 

@@ -20,7 +20,10 @@ class DatabaseSeeder extends Seeder
         // ]);
         $this->call([
             Adminloginseeder::class,
-            Clientseeder::class
+            Clientseeder::class,
+            countryseeder::class,
+            companyseeder::class,
+            tripseeder::class
         ]);
     }
 }

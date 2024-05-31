@@ -13,10 +13,26 @@ use Illuminate\Http\Request;
 class flighttripcontroller extends Controller
 {
     public function gettrip(){
-        $trip=Trip::query()->with(['country:id,name,Rate','company:id,name,service'])->get();
+
+        $trip=Trip::query()->with(['country:id,name','company:id,name'])->get();
+
+
+
            if($trip->count()>0){
+            $formattedTrips = $trip->map(function ($trip) {
+                return [
+                    'id' => $trip->id,
+                    'tripPlace' => $trip->TripPlace,
+                    'towards' => $trip->Towards,
+                    'timeTrip' => $trip->TimeTrip,
+                    'price' => $trip->Price,
+                    'amountpeople'=>$trip->amountpeople,
+                    'companyName' => $trip->company->name,
+                    'countryName' => $trip->country->name
+                ];
+            });
                return response()->json([
-                   'data'=>$trip,
+                'data'=>$formattedTrips,
                    'message'=>'this the trip in our app',
                    'status'=>200,
                ],200);
@@ -29,7 +45,7 @@ class flighttripcontroller extends Controller
            }
        }
     //Reseve Tripe
-    public function ResveFightTrip(Request $request){
+    public function ResveFlightTrip(Request $request){
         $request->validate([
             "TripID"=>"required",
             "email"=>"required",
@@ -38,7 +54,9 @@ class flighttripcontroller extends Controller
             "Gendor"=>"required",
             "FlightClass"=>"required",
             "Wight"=>"required",
+            "amountpeople"=>"required"
         ]);
+
         $User=User::where('email',$request->email)->first();
         if(!$User){
             return response()->json([
@@ -47,6 +65,39 @@ class flighttripcontroller extends Controller
                 "status"=>404,
             ],404);
         }
+
+                $tripuser=reserveTrip::query()->where('users_id',auth()->user()->id)
+                ->where('fight_air_planes_id',$request->TripID)->get();
+                if($tripuser->count()>0){
+                    return response()->json([
+                        'data'=>[],
+                        "Message"=>"You Are Reserve This Trip Before Thank For That",
+                        "status"=>409,
+                    ],409);
+                }
+
+//amount 200
+//if(amountRequest>amount)=>count people more than the abliable chers
+//if(amount==0)=>you cannot reserve this trip becouse is cloused of people
+//else=> amountnew =amount - amountRequest => you reserve this trip
+//first thing i will do
+//1-add culomn to trip and reserve trip mains amount of people
+//2-change the trip requests for admin [insert update]
+//3-change the reserve trip requests for client
+//4-try the changes
+//__________________________________________//
+
+
+        $amounttrip=Trip::query()->where('id',$request->TripID)->first();
+
+        if($request->amountpeople > $amounttrip->amountpeople || $amounttrip->amountpeople == 0){
+            return response()->json([
+                'data'=>[],
+                "Message"=>"There are no enough plases for you",
+                "status"=>422,
+                ],422);
+            }
+
 
         $UserId=$User->id;
         $trip =new reserveTrip();
@@ -57,7 +108,13 @@ class flighttripcontroller extends Controller
         $trip->Gendor=$request->Gendor;
         $trip->FlightClass=$request->FlightClass;
         $trip->Wight=$request->Wight;
+        $trip->amountpeople=$request->amountpeople;
         $trip->save();
+
+        $amounttrip->amountpeople=$amounttrip->amountpeople - $request->amountpeople;
+                $amounttrip->update([
+                    'amountpeople'=>$amounttrip->amountpeople
+                ]);
 
         return response()->json([
             'data'=>$trip,
@@ -84,6 +141,13 @@ class flighttripcontroller extends Controller
             ],404);
         }
 
+        $amounttrip=Trip::query()->where('id',$request->idTrip)->first();
+        $amounttrip->amountpeople=$amounttrip->amountpeople + $reservetrip->amountpeople;
+                $amounttrip->update([
+                    'amountpeople'=>$amounttrip->amountpeople
+                ]);
+
+
         reserveTrip::query()->where('id',$request->idTrip)->delete();
         return response()->json([
             'data'=>$reservetrip,
@@ -103,6 +167,7 @@ class flighttripcontroller extends Controller
             "newGendor"=>"nullable",
             "newFlightClass"=>"nullable",
             "newWight"=>"nullable",
+            "newamountpeople"=>'nullable'
         ]);
 
 
@@ -116,13 +181,63 @@ class flighttripcontroller extends Controller
             ],404);
         }
 
+
+        //if($request)
+        //if(request> amount old)=>$request-amount old => new-amount trip
+        //if($request>amount trip )=>message amount in trip not enough
+        //if(request < old amount)=>old amount -request => new +amount trip
+        //else
+        // if()
+
+
+        if($request->newamountpeople){
+            $amounttrip=Trip::query()->where('id',$request->reserveId)->first();
+
+            if($request->newamountpeople > $amounttrip->amountpeople){
+                return response()->json([
+                    'data'=>[],
+                    'message'=>'The NewAmountPeople Is Greater Than The Amount Of Trip ',
+                    'status'=>422
+                ],422);
+            }
+
+            if($request->newamountpeople > $reserveTrip->amountpeople){
+
+               $amountnew=$request->newamountpeople - $reserveTrip->amountpeople;
+
+               $amountnew=$amounttrip->amountpeople-$amountnew  ;
+
+                $amounttrip->update([
+                    'amountpeople'=> $amountnew
+                ]);
+
+            }
+            if($request->newamountpeople <  $reserveTrip->amountpeople){
+
+               $amountnew=  $reserveTrip->amountpeople - $request->newamountpeople ;
+
+               $amountnew=$amountnew + $amounttrip->amountpeople;
+
+                $amounttrip->update([
+                    'amountpeople'=> $amountnew
+                ]);
+
+            }
+
+        }
+
         reserveTrip::query()->where('id',$request->reserveId)->update([
             'fatherName'=>$request->newfatherName??$reserveTrip->fatherName,
             'MotherName'=>$request->newMotherName??$reserveTrip->MotherName,
             'Gendor'=>$request->newGendor??$reserveTrip->Gendor,
             'FlightClass'=>$request->newFlightClass??$reserveTrip->FlightClass,
             'Wight'=>$request->newWight??$reserveTrip->Wight,
+            'amountpeople'=>$request->newamountpeople??$reserveTrip->amountpeople,
         ]);
+
+
+
+
         $Reservenewinfo=reserveTrip::query()->where('id',$request->reserveId)->first();
         return response()->json([
             'data'=>$Reservenewinfo,
@@ -185,8 +300,10 @@ class flighttripcontroller extends Controller
             ],200);
         }
 
-        $company=FightCompany::query()->where('name',$request->CompanyORCountry)->first();
+
+        $company=FightCompany::query()->where('name',$request->CompanyORCountry)->get();
         if($company->count()>0){
+            $company=FightCompany::query()->where('name',$request->CompanyORCountry)->first();
 
             $tripwithcompany=Trip::query()->where('fight_company_id',$company->id)->first();
 
@@ -200,11 +317,17 @@ class flighttripcontroller extends Controller
 
             return response()->json([
                 'data'=>$tripwithcompany,
-                'message'=>'There Are The Trips Via Country',
+                'message'=>'There Are The Trips Via company',
                 'status'=>200
             ],200);
 
         }
+
+        return response()->json([
+            'data'=>[],
+            'message'=>'Not Found Any Trip With Realated Search',
+            'status'=>404
+        ],404);
 
         // $CounterWithAirPlanes=new FightCompany();
         // $CounterWithAirPlanes=FightCompany::with(['Trips'=>function($q){
@@ -215,10 +338,6 @@ class flighttripcontroller extends Controller
         //     "sattus"=>"200",
         //     "company"=>$CounterWithAirPlanes
         // ]);
-    //}
-
-
-
-
-}
+        //}
+   }
 }

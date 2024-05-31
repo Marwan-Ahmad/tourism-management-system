@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string("MotherName");
             $table->string("Gendor");
             $table->string("FlightClass");
-            $table->string("Wight");
+            $table->integer("Wight");
+            $table->integer('amountpeople');
             $table->timestamps();
         });
     }

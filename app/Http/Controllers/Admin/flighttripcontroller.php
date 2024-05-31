@@ -24,8 +24,8 @@ class flighttripcontroller extends Controller
                     return response()->json([
                         'data'=>[],
                         'message'=>'not found any trip',
-                        'status'=>404,
-                    ],404);
+                        'status'=>200,
+                    ],200);
                 }
             }
 
@@ -34,15 +34,15 @@ class flighttripcontroller extends Controller
     public function InputFlightTrip(Request $request){
         $request->validate([
             "TripPlace"=>"required",
-            "Towards"=>"required",
+            "CountryIdTowards"=>"required",
             "TimeTrip"=>"required",
             "Price"=>"required",
-            "nameOfFlightCompany"=>"required",
-            "locationOfFlightCompany"=>"required",
+            'amountpeople'=>'required',
+            'IdCompany'=>'required'
         ]);
-        $flightName=FightCompany::where('name',$request->nameOfFlightCompany)
-        ->where('location',$request->locationOfFlightCompany)->first();
-        $country_id=Contrey::query()->where('name',$request->Towards)->first();
+        $flightName=FightCompany::where('id',$request->IdCompany)
+        ->first();
+        $country_id=Contrey::query()->where('id',$request->CountryIdTowards)->first();
 
         if(!$flightName){
             return response()->json([
@@ -59,25 +59,47 @@ class flighttripcontroller extends Controller
                 "status"=>404,
             ]);
         }
-        $flight_id= $flightName->id;
+
+            $flight_id= $flightName->id;
+            //This is for dounlicate the trip in the app
+            $doubletrip=Trip::query()->where('TripPlace',$request->TripPlace)
+            ->where('Towards',$country_id->name)
+            ->where('TimeTrip',$request->TimeTrip)
+            ->where('fight_company_id',$flight_id)
+            ->where('Price',$request->Price)
+            ->where('country_id',$country_id->id)->first();
+            if($doubletrip){
+                $doubletrip->amountpeople=$doubletrip->amountpeople + $request->amountpeople;
+                $doubletrip->update([
+                    'amountpeople'=>$doubletrip->amountpeople
+                ]);
+                return response()->json([
+                    'data'=>$doubletrip,
+                    "message"=>"The Trip is already exist the amountpeople change to $doubletrip->amountpeople",
+                    "status"=>200,
+                ]);
+            }
+
         $Trip=new Trip();
         $Trip->TripPlace=$request->TripPlace;
-        $Trip->Towards=$request->Towards;
+        $Trip->Towards=$country_id->name;
         $Trip->TimeTrip=$request->TimeTrip;
         $Trip->Price=$request->Price;
+        $Trip->amountpeople=$request->amountpeople;
         $Trip->fight_company_id=$flight_id;
         $Trip->country_id=$country_id->id;
         $Trip->save();
+
             $getTrip=Trip::query()
             ->where('TripPlace',$request->TripPlace)
-            ->where('Towards',$request->Towards)
+            ->where('Towards',$country_id->name)
             ->where('TimeTrip',$request->TimeTrip)
             ->where('Price',$request->Price)->where('fight_company_id',$flight_id)
             ->with(['country:id,name,Rate'])
             ->first();
         return response()->json([
             'data'=>$getTrip,
-            "message"=>"Trip Added Successfyly",
+            "message"=>"Trip Added Successfly",
             "status"=>201,
         ]);
     }
@@ -111,7 +133,9 @@ class flighttripcontroller extends Controller
             "NewTripPlace"=>"nullable",
             "NewTowards"=>"nullable",
             "TimeTrip"=>"nullable",
-            "Price"=>"nullable"
+            "Price"=>"nullable",
+            "amountpeople"=>"nullable",
+
         ]);
         $Trip=Trip::where('id', $request->id)->with(['country:id,name,Rate'])->first();
         if(!$Trip){
@@ -137,6 +161,7 @@ class flighttripcontroller extends Controller
             'TripPlace'=>$request->NewTripPlace??$Trip->TripPlace,
             'Towards'=>$request->NewTowards??$Trip->Towards,
             "TimeTrip"=>$request->TimeTrip??$Trip->TimeTrip,
+            "amountpeople"=>$request->amountpeople??$Trip->amountpeople,
             'Price'=>$request->Price??$Trip->Price,
             'country_id'=>$country_id->id
         ]);
