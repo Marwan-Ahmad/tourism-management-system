@@ -92,6 +92,9 @@ class BalanceController extends Controller
             'status'=>'payed'
         ]);
 
+
+
+
         return response()->json([
             'data'=>$reservetrip,
             'message'=>'thank you for payed to this trip enjoy in it',

@@ -32,49 +32,49 @@ class BalanceController extends Controller
     }
 
 
-public function CreateAccountForClient(Request $request){
-    $request->validate([
-        'PhoneUser'=>'required',
-        'EmailUser'=>'required',
-        'Balance'=>'required'
+// public function CreateAccountForClient(Request $request){
+//     $request->validate([
+//         'PhoneUser'=>'required',
+//         'EmailUser'=>'required',
+//         'Balance'=>'required'
 
-    ]);
+//     ]);
 
-    $user_id=User::query()->where('email',$request->EmailUser)
-    ->where('phone',$request->PhoneUser)
-    ->first();
+//     $user_id=User::query()->where('email',$request->EmailUser)
+//     ->where('phone',$request->PhoneUser)
+//     ->first();
 
 
 
-    if(!$user_id){
-        return response()->json([
-            'data'=>[],
-            'message'=>'Client Not Found To Transfer Cash To Him',
-            'status'=>404
-        ],404);
-    }
+//     if(!$user_id){
+//         return response()->json([
+//             'data'=>[],
+//             'message'=>'Client Not Found To Transfer Cash To Him',
+//             'status'=>404
+//         ],404);
+//     }
 
-    $haveaccount=balance::query()->where('user_id',$user_id->id)->get();
+//     $haveaccount=balance::query()->where('user_id',$user_id->id)->get();
 
-    if($haveaccount->count()>0){
-        return response()->json([
-            'data'=>[],
-            'message'=>'Client already have account',
-            'status'=>409
-        ],404);
-    }
-        $cash=balance::query()->create([
-            'balance'=>$request->Balance,
-            'user_id'=>$user_id->id,
-            'last_transaction_date'=>Carbon::now()
-        ]);
+//     if($haveaccount->count()>0){
+//         return response()->json([
+//             'data'=>[],
+//             'message'=>'Client already have account',
+//             'status'=>409
+//         ],404);
+//     }
+//         $cash=balance::query()->create([
+//             'balance'=>$request->Balance,
+//             'user_id'=>$user_id->id,
+//             'last_transaction_date'=>Carbon::now()
+//         ]);
 
-        return response()->json([
-            'data'=>$cash,
-            'message'=>'Client Account created successfuly with balance'." ". $request->Balance,
-            'status'=>201
-        ],201);
-   }
+//         return response()->json([
+//             'data'=>$cash,
+//             'message'=>'Client Account created successfuly with balance'." ". $request->Balance,
+//             'status'=>201
+//         ],201);
+//    }
 
 
 

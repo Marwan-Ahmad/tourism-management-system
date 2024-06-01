@@ -341,7 +341,7 @@ class flighttripcontroller extends Controller
 
         $reserveTrip=reserveTrip::query()->where('users_id',$userid)->with(['trip'])->get();
 
-        if($reserveTrip->count()<0){
+        if($reserveTrip->count()<=0){
             return response()->json([
                 'data'=>[],
                 'message'=>'Your do not have reserve trip',

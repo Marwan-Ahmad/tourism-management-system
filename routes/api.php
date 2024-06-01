@@ -98,7 +98,7 @@ Route::post('updateadminprofile',[AdminProfilecontroller::class,'updateadminprof
 
 //account api balance
 Route::get('getClientsAccount',[BalanceController::class,'getClientsAccount']);
-Route::post('CreateAccountForClient',[BalanceController::class,'CreateAccountForClient']);
+//Route::post('CreateAccountForClient',[BalanceController::class,'CreateAccountForClient']);
 Route::post('DeleteAccountClient',[BalanceController::class,'DeleteAccountClient']);
 Route::post('UpdateClientAccount',[BalanceController::class,'UpdateClientAccount']);
 

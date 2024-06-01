@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
+use App\Models\balance;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -46,6 +48,12 @@ class authcontroller extends Controller
 
               $data['user']=$user;
               $data['token']=$token;
+
+              balance::query()->create([
+                'balance'=>0,
+                'user_id'=>$UserInfo->id,
+                'last_transaction_date'=>Carbon::now()
+            ]);
 
               return response()->json([
                 "message"=> "seccefull Rigisetered",
