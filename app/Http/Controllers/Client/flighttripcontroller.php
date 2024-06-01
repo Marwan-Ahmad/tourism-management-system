@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
+use App\Models\balance;
 use App\Models\Contrey;
 use App\Models\FightCompany;
 use App\Models\reserveTrip;
@@ -44,6 +45,9 @@ class flighttripcontroller extends Controller
                ],404);
            }
        }
+
+
+
     //Reseve Tripe
     public function ResveFlightTrip(Request $request){
         $request->validate([
@@ -98,6 +102,17 @@ class flighttripcontroller extends Controller
                 ],422);
             }
 
+            // $checkbalance=balance::query()->where('user_id',auth()->user()->id)->first();
+            // if($checkbalance->balance < $amounttrip->Price || ($amounttrip->Price*$request->amountpeople) > $checkbalance->balance){
+            //     return response()->json([
+            //         'data'=>[],
+            //         "Message"=>"No Enough Money To Reserve This Trip Please Recharge Your Account",
+            //         "status"=>422,
+            //         ],422);
+            // }
+
+
+
 
         $UserId=$User->id;
         $trip =new reserveTrip();
@@ -109,7 +124,14 @@ class flighttripcontroller extends Controller
         $trip->FlightClass=$request->FlightClass;
         $trip->Wight=$request->Wight;
         $trip->amountpeople=$request->amountpeople;
+        $trip->status='unpayed';
         $trip->save();
+
+
+            // $checkbalance->balance=$checkbalance->balance - ($amounttrip->Price*$request->amountpeople);
+            // $checkbalance->update([
+            //     'balance'=>$checkbalance->balance
+            // ]);
 
         $amounttrip->amountpeople=$amounttrip->amountpeople - $request->amountpeople;
                 $amounttrip->update([
@@ -133,6 +155,14 @@ class flighttripcontroller extends Controller
 
         $reservetrip=reserveTrip::query()->where('id',$request->idTrip)->first();
 
+        if($reservetrip->status=='unpayed'){
+            return response()->json([
+                'data'=>[],
+                'message'=>'The Trip is Unpayed To delete please pay it first',
+                'status'=>404
+            ],404);
+        }
+
         if(!$reservetrip){
             return response()->json([
                 'data'=>[],
@@ -141,10 +171,19 @@ class flighttripcontroller extends Controller
             ],404);
         }
 
-        $amounttrip=Trip::query()->where('id',$request->idTrip)->first();
+
+
+
+        $amounttrip=Trip::query()->where('id',$reservetrip->fight_air_planes_id)->first();
         $amounttrip->amountpeople=$amounttrip->amountpeople + $reservetrip->amountpeople;
                 $amounttrip->update([
                     'amountpeople'=>$amounttrip->amountpeople
+                ]);
+
+                $checkbalance=balance::query()->where('user_id',auth()->user()->id)->first();
+                $checkbalance->balance=$checkbalance->balance + ($amounttrip->Price * $reservetrip->amountpeople);
+                $checkbalance->update([
+                    'balance'=>$checkbalance->balance
                 ]);
 
 
@@ -181,6 +220,16 @@ class flighttripcontroller extends Controller
             ],404);
         }
 
+        if($reserveTrip->status=='unpayed'){
+            return response()->json([
+                'data'=>[],
+                'message'=>'The Trip is Unpayed To update please pay it first',
+                'status'=>404
+            ],404);
+        }
+
+
+
 
         //if($request)
         //if(request> amount old)=>$request-amount old => new-amount trip
@@ -191,7 +240,7 @@ class flighttripcontroller extends Controller
 
 
         if($request->newamountpeople){
-            $amounttrip=Trip::query()->where('id',$request->reserveId)->first();
+            $amounttrip=Trip::query()->where('id',$reserveTrip->fight_air_planes_id)->first();
 
             if($request->newamountpeople > $amounttrip->amountpeople){
                 return response()->json([
@@ -224,7 +273,45 @@ class flighttripcontroller extends Controller
 
             }
 
+
+            //if($request amount >old amount)=>new=$request - old=>balance=balance old - new*tripprice
+                //if(balance>=0)
+                   //update
+                //else
+                   //return not enough mony
+            //if($request amount< old amount )=>new=old -$request=>balance=old balance +new*tripprice
+                    //update
+
+            $checkbalance=balance::query()->where('user_id',auth()->user()->id)->first();
+
+            if($request->newamountpeople > $reserveTrip->amountpeople){
+                $newamount=$request->newamountpeople -  $reserveTrip->amountpeople;
+
+                $checkbala=$checkbalance->balance - $newamount*$amounttrip->Price;
+
+                if($checkbala>=0){
+                    $checkbalance->update([
+                        'balance'=>$checkbala
+                    ]);
+                }else{
+                    return response()->json([
+                        'data'=>[],
+                        'message'=>'Not Enough Mouney To Reserve This amount of people',
+                        'status'=>422
+                    ],422);
+                }
+            }elseif($request->newamountpeople < $reserveTrip->amountpeople){
+                $newamount=$reserveTrip->amountpeople - $request->newamountpeople;
+
+                $checkbala=$checkbalance->balance + $newamount*$amounttrip->Price;
+
+                $checkbalance->update([
+                    'balance'=>$checkbala
+                ]);
+            }
         }
+
+
 
         reserveTrip::query()->where('id',$request->reserveId)->update([
             'fatherName'=>$request->newfatherName??$reserveTrip->fatherName,
@@ -265,6 +352,27 @@ class flighttripcontroller extends Controller
         return response()->json([
             'data'=>$reserveTrip,
             'message'=>'Your Reserve Trips',
+            'status'=>200
+        ],200);
+
+    }
+
+
+    public function getunpayedtrip(){
+        $userid=auth()->user()->id;
+
+        $reserveTrip=reserveTrip::query()->where('users_id',$userid)->where('status','unpayed')->with(['trip'])->get();
+        if($reserveTrip->count() <= 0){
+            return response()->json([
+                'data'=>[],
+                'message'=>'Your do not have un payed reserve trip',
+                'status'=>404
+            ],404);
+        }
+
+        return response()->json([
+            'data'=>$reserveTrip,
+            'message'=>'Your unpayed Reserve Trips',
             'status'=>200
         ],200);
 
@@ -328,16 +436,26 @@ class flighttripcontroller extends Controller
             'message'=>'Not Found Any Trip With Realated Search',
             'status'=>404
         ],404);
-
-        // $CounterWithAirPlanes=new FightCompany();
-        // $CounterWithAirPlanes=FightCompany::with(['Trips'=>function($q){
-        //     $q->select(['TripPlace','Towards','DayOfTheTrip'
-        //     ,'MonthOfTheTrip','TimeOfTheTrip','fight_company_id','id','Price']);
-        // }])->where('name',$request->NameOfCompany)->select('name','id')->get();
-        // return response()->json([
-        //     "sattus"=>"200",
-        //     "company"=>$CounterWithAirPlanes
-        // ]);
-        //}
    }
+
+
+
 }
+/*
+first thing i will do somw logic and delete some logic from the code
+
+1=> i will create function to payed will insert phone and email to pay
+2=> i will add culmon to reserve trip to payed or un payed defult un payed
+3=> i will when the press un payed will give him un payed in db and showed in moinetor
+4=> i will when they press payed will give him mointer to enter email phone to paye from price mult the num of amount people
+
+
+
+1 =>  add coulmon to reserve trip to payed or not payed
+2 =>  get the un payed trips
+3 =>  logic of payed in reserve trip transfer to function
+4 =>  when press in payed will send the id and have a flight trip price with the amount from reserve
+5 =>  update the balance and updated the the status of the trip to payed
+
+
+*/

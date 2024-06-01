@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string("FlightClass");
             $table->integer("Wight");
             $table->integer('amountpeople');
+            $table->string('status')->default('unpayed');
             $table->timestamps();
         });
     }

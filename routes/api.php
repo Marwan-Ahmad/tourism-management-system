@@ -126,6 +126,7 @@ Route::get('GetAirPlanesCompany',[ClientAirplanecontroller::class,'GetAirPlanesC
 // client information trip and company for trip
 Route::get('gettripclient',[Clientflighttripcontroller::class,'gettrip']);
 Route::get('GetReserveTrip',[Clientflighttripcontroller::class,'GetReserveTrip']);
+Route::get('getunpayedtrip',[Clientflighttripcontroller::class,'getunpayedtrip']);
 
 
 Route::post('ResveFlightTrip',[ClientFlighttripcontroller::class,'ResveFlightTrip']);
@@ -179,6 +180,7 @@ Route::post('CheckBookingActivity',[bookingscontroller::class,'CheckBookingActiv
 
     //myaccount
     Route::get('getmyaccount',[ClientBalanceController::class,'getmyaccount']);
+    Route::post('PayedToTrip',[ClientBalanceController::class,'PayedToTrip']);
 
 
 
