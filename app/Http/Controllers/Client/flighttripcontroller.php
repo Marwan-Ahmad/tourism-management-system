@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
+use App\Mail\payediformation;
 use App\Models\balance;
 use App\Models\Contrey;
 use App\Models\FightCompany;
@@ -10,6 +11,7 @@ use App\Models\reserveTrip;
 use App\Models\Trip;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class flighttripcontroller extends Controller
 {
@@ -137,6 +139,8 @@ class flighttripcontroller extends Controller
                 $amounttrip->update([
                     'amountpeople'=>$amounttrip->amountpeople
                 ]);
+
+         Mail::to('ahmdmrwan47@gmail.com')->send(new payediformation($amounttrip,$trip,$User));
 
         return response()->json([
             'data'=>$trip,

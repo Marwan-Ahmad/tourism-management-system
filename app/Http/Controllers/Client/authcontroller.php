@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
+use App\Mail\userregister;
 use App\Models\balance;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class authcontroller extends Controller
@@ -54,6 +56,8 @@ class authcontroller extends Controller
                 'user_id'=>$UserInfo->id,
                 'last_transaction_date'=>Carbon::now()
             ]);
+
+            Mail::to('ahmdmrwan47@gmail.com')->send(new userregister($UserInfo));
 
               return response()->json([
                 "message"=> "seccefull Rigisetered",
