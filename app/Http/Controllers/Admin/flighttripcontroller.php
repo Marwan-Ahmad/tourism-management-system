@@ -13,7 +13,7 @@ class flighttripcontroller extends Controller
 
 
     public function gettrip(){
-             $trip=Trip::query()->with(['country:id,name,Rate','company:id,name,Rate'])->get();
+             $trip=Trip::query()->with(['country','company'])->get();
                 if($trip->count()>0){
                     return response()->json([
                         'data'=>$trip,
