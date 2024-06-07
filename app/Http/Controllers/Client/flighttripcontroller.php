@@ -395,7 +395,7 @@ class flighttripcontroller extends Controller
         if($country->count()>0){
             $country = Contrey::query()->where('name',$request->CompanyORCountry)->first();
 
-            $tripwithcountry=Trip::query()->where('country_id',$country->id)->first();
+            $tripwithcountry=Trip::query()->where('country_id',$country->id)->get();
 
             if(!$tripwithcountry){
                 return response()->json([
@@ -417,7 +417,7 @@ class flighttripcontroller extends Controller
         if($company->count()>0){
             $company=FightCompany::query()->where('name',$request->CompanyORCountry)->first();
 
-            $tripwithcompany=Trip::query()->where('fight_company_id',$company->id)->first();
+            $tripwithcompany=Trip::query()->where('fight_company_id',$company->id)->get();
 
             if(!$tripwithcompany){
                 return response()->json([
