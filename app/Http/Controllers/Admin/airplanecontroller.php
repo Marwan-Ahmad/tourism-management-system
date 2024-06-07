@@ -13,7 +13,7 @@ class airplanecontroller extends Controller
 
 
         public function getcompany(){
-            $getcompany=FightCompany::query()->get();
+            $getcompany=FightCompany::query()->with(['contrey'])->get();
             if($getcompany->count()>0){
             return response()->json([
                 'data'=>$getcompany,
