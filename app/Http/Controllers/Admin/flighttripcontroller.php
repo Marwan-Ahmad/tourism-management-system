@@ -34,15 +34,15 @@ class flighttripcontroller extends Controller
     public function InputFlightTrip(Request $request){
         $request->validate([
             "TripPlace"=>"required",
-            "CountryIdTowards"=>"required",
+            "CountrynameTowards"=>"required",
             "TimeTrip"=>"required",
             "Price"=>"required",
             'amountpeople'=>'required',
-            'IdCompany'=>'required'
+            'nameCompany'=>'required'
         ]);
-        $flightName=FightCompany::where('id',$request->IdCompany)
+        $flightName=FightCompany::where('name',$request->nameCompany)
         ->first();
-        $country_id=Contrey::query()->where('id',$request->CountryIdTowards)->first();
+        $country_id=Contrey::query()->where('name',$request->CountrynameTowards)->first();
 
         if(!$flightName){
             return response()->json([
@@ -135,6 +135,7 @@ class flighttripcontroller extends Controller
             "TimeTrip"=>"nullable",
             "Price"=>"nullable",
             "amountpeople"=>"nullable",
+            'nameCompany'=>'nullable'
 
         ]);
         $Trip=Trip::where('id', $request->id)->with(['country:id,name,Rate'])->first();
@@ -148,6 +149,7 @@ class flighttripcontroller extends Controller
 
             $country_id=Contrey::query()->where('name',$request->NewTowards??$Trip->Towards)->first();
 
+
             if(!$country_id){
                 return response()->json([
                     'data'=>[],
@@ -155,15 +157,26 @@ class flighttripcontroller extends Controller
                     "status"=>404,
                 ]);
             }
+            $flightName=FightCompany::query()->where('name',$request->nameCompany)->first();
+            if(!$flightName){
+                return response()->json([
+                    'data'=>[],
+                    "message"=>"The company you added the trip in it Not Found",
+                    "status"=>404,
+                ]);
+            }
 
 
+        $flight_id= $flightName->id;
         $Trip->update([
             'TripPlace'=>$request->NewTripPlace??$Trip->TripPlace,
             'Towards'=>$request->NewTowards??$Trip->Towards,
             "TimeTrip"=>$request->TimeTrip??$Trip->TimeTrip,
             "amountpeople"=>$request->amountpeople??$Trip->amountpeople,
             'Price'=>$request->Price??$Trip->Price,
-            'country_id'=>$country_id->id
+            'country_id'=>$country_id->id,
+            'fight_company_id'=>$flight_id??$Trip->fight_company_id
+
         ]);
 
         return response()->json([
