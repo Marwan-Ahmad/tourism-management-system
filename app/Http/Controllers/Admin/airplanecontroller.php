@@ -157,9 +157,14 @@ class airplanecontroller extends Controller
             "safe"=>'nullable',
             "Rate"=>'nullable',
             "service"=>'nullable',
+            "nameOfCountry"=>'nullable',
         ]);
         $AirplaneCompnay=FightCompany::where('id',$request->idOldName)
         ->first();
+
+        $namecountry=Contrey::query()->where('name',$request->nameOfCountry)->first();
+
+
 
 
         if(!$AirplaneCompnay){
@@ -176,7 +181,7 @@ class airplanecontroller extends Controller
             if(FightCompany::query()->where('name',$request->NewName)->where('id','!=',$AirplaneCompnay->id)->first()){
                 return response()->json([
                     'Data'=>[],
-                    "message"=>"the name of country you use it is exists before",
+                    "message"=>"the name of company you use it is exists before",
                     "satuts"=>400,
                 ],400);
             }
@@ -206,7 +211,8 @@ class airplanecontroller extends Controller
             'safe'=>$request->safe??$AirplaneCompnay->safe,
             'Rate'=>$request->Rate??$AirplaneCompnay->Rate,
             'service'=>$request->service??$AirplaneCompnay->service,
-            'photo'=>$photoPath
+            'photo'=>$photoPath,
+            'Country_id'=>$namecountry->id??$AirplaneCompnay->id
         ]) ;
         $AirplaneCompnaynew=FightCompany::where('name',$request->NewName??$AirplaneCompnay->name)
         ->where('location',$request->NewLocation??$AirplaneCompnay->location)
