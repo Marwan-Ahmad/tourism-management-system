@@ -158,15 +158,6 @@ class flighttripcontroller extends Controller
         ]);
 
         $reservetrip=reserveTrip::query()->where('id',$request->idTrip)->first();
-
-        if($reservetrip->status=='unpayed'){
-            return response()->json([
-                'data'=>[],
-                'message'=>'The Trip is Unpayed To delete please pay it first',
-                'status'=>404
-            ],404);
-        }
-
         if(!$reservetrip){
             return response()->json([
                 'data'=>[],
@@ -174,6 +165,16 @@ class flighttripcontroller extends Controller
                 'status'=>404
             ],404);
         }
+
+        if($reservetrip->status=='unpayed'){
+            reserveTrip::query()->where('id',$request->idTrip)->delete();
+            return response()->json([
+                'data'=>$reservetrip,
+                'message'=>'Your Reserve Trip is canceled',
+                'status'=>200
+            ],200);
+        }
+
 
 
 

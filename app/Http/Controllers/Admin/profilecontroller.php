@@ -14,7 +14,7 @@ class profilecontroller extends Controller
         $Admin=auth()->user();
         if($Admin){
 
-            $Admin->visaphoto=url($Admin->visaphoto);
+
         return response()->json([
             "data"=>auth()->user(),
             "message"=>"THis Is The Profile Of The Admin",

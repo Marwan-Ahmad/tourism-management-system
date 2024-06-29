@@ -16,6 +16,7 @@ class hotelcontroller extends Controller
         $request->validate([
             "name"=>"required",
             "location"=>"required",
+            "nameOfCountry"=>"required",
             "description"=>"required",
             "Comforts"=>"required",
             "food"=>"required",
@@ -26,7 +27,6 @@ class hotelcontroller extends Controller
             "Roomphoto2"=>"required",
             "Roomphoto3"=>"required",
             "Rate"=>"required",
-            "nameOfCountry"=>"required"
         ]);
         $Basicphoto = $request->file('Basicphoto');
         $fileName = uniqid().'.'.$Basicphoto->getClientOriginalExtension();
@@ -48,16 +48,28 @@ class hotelcontroller extends Controller
         Storage::disk('public')->put($fileName, file_get_contents($Roomphoto3));
         $Roomphoto3=Storage::url($fileName);
 
-        $contry=Contrey::where('name',$request->nameOfCountry)->first();
+        $contry=Contrey::query()->where('name',$request->nameOfCountry)->first();
+
+
+        if(!$contry){
+            return response()->json([
+                'data'=>[],
+                "message"=>"the country not found please check the name of country",
+                "status"=>200,
+          ]);
+        }
         $contry_id=$contry->id;
 
-        if( !$contry){
+        $hotelexist=Hotel::query()->where('name',$request->name)
+        ->where('location',$request->location)
+        ->where('Country_id',$contry_id)->first();
+        if($hotelexist){
             return response()->json([
-                "status"=>"200",
-                "message"=>"the country not found please check the name of country "
-        ]);
+                'data'=>[],
+                "message"=>"the hotel is exist before at the same place",
+                "status"=>200,
+          ]);
         }
-
         $CompanyInformation=new Hotel();
         $CompanyInformation->name=$request->name;
         $CompanyInformation->location=$request->location;
@@ -75,11 +87,14 @@ class hotelcontroller extends Controller
         $CompanyInformation->save();
 
         return response()->json([
-                "status"=>"200",
-                "message"=>"the information of Hotel saved and "
+            'data'=>$CompanyInformation,
+            "message"=>"the information of Hotel saved and",
+            "status"=>"200",
         ]);
 
     }
+
+
     //To Drop Hotel From The App
     public function DropHotel(Request $request){
         $request->validate([
