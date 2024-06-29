@@ -41,19 +41,19 @@ class profilecontroller extends Controller
         ]);
         $Admininfo=auth()->user();
         if($Admininfo){
-            if ($request->hasFile('photo')) {
+            if ($request->hasFile('visaphoto')) {
                 $oldPhotoPath = str_replace('/storage', '', $Admininfo->visaphoto);
                 if (Storage::disk('public')->exists($oldPhotoPath)) {
                     Storage::disk('public')->delete($oldPhotoPath);
                 }
 
-                $image = $request->file('photo');
+                $image = $request->file('visaphoto');
                 $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
                 Storage::disk('public')->put($fileName, file_get_contents($image));
                 $photoPath = Storage::url($fileName);
             } else {
 
-                $photoPath = $Admininfo->visaphoto;
+               $photoPath = $Admininfo->visaphoto;
             }
                     if(User::query()->where('email',$request->email)->where('id','!=',$Admininfo->id)->first()){
                         return response()->json([
