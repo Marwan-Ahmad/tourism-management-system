@@ -75,6 +75,7 @@ Route::post('UpdateFlightTrip',[flighttripcontroller::class,'UpdateFlightTrip'])
 Route::post('inputHotelInformation',[hotelcontroller::class,'inputHotelInformation']);
 Route::post('DropHotel',[hotelcontroller::class,'DropHotel']);
 Route::post('updateHotel',[hotelcontroller::class,'updateHotel']);
+Route::get('gethotels',[hotelcontroller::class,'gethotels']);
 
 // admin tourist place
 Route::post('inputInoformationTouirstPlace',[touristplacecontroller::class,'inputInoformationTouirstPlace']);

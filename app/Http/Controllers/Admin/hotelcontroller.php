@@ -10,6 +10,27 @@ use Illuminate\Support\Facades\Storage;
 
 class hotelcontroller extends Controller
 {
+
+    public function gethotels(){
+        $allhotels=Hotel::query()->with(['contrey'])->get();
+        if($allhotels->count()<=0){
+            return response()->json([
+                'data'=>[],
+                'message'=>'no hotels',
+                'status'=>404,
+            ]);
+        }else{
+
+            return response()->json([
+                'data'=>$allhotels,
+                'message'=>'this is the hotels in your app',
+                'status'=>200,
+            ]);
+        }
+
+    }
+
+
     //To Input Hotell
     public function inputHotelInformation(Request $request){
 
@@ -88,7 +109,7 @@ class hotelcontroller extends Controller
 
         return response()->json([
             'data'=>$CompanyInformation,
-            "message"=>"the information of Hotel saved and",
+            "message"=>"the information of Hotel added successfuly",
             "status"=>"200",
         ]);
 
@@ -100,63 +121,174 @@ class hotelcontroller extends Controller
         $request->validate([
             "IdHotel"=>"required"
         ]);
+
         $Hotel=hotel::where('id',$request->IdHotel)->first();
         if(!$Hotel){
             return response()->json([
-                "status"=>"200",
-                "messgae"=>"the Hotel not found "
-            ]);}
-            hotel::where('id',$request->IdHotel)->delete();
+                'data'=>[],
+                "messgae"=>"the Hotel not found",
+                "status"=>404,
+            ]);
+        }
+
+        $oldPhotoPathbasic = str_replace('/storage', '', $Hotel->Basicphoto);
+        if (Storage::disk('public')->exists($oldPhotoPathbasic)) {
+            Storage::disk('public')->delete($oldPhotoPathbasic);
+        }
+        $oldPhotoPath1 = str_replace('/storage', '', $Hotel->Roomphoto1);
+        if (Storage::disk('public')->exists($oldPhotoPath1)) {
+            Storage::disk('public')->delete($oldPhotoPath1);
+        }
+        $oldPhotoPath2 = str_replace('/storage', '', $Hotel->Roomphoto2);
+        if (Storage::disk('public')->exists($oldPhotoPath2)) {
+            Storage::disk('public')->delete($oldPhotoPath2);
+        }
+        $oldPhotoPath3 = str_replace('/storage', '', $Hotel->Roomphoto3);
+        if (Storage::disk('public')->exists($oldPhotoPath3)) {
+            Storage::disk('public')->delete($oldPhotoPath3);
+        }
+        hotel::where('id',$request->IdHotel)->delete();
         return response()->json([
-            "status"=>"200",
-            "messgae"=>"the Hotel is deleted"
+            'data'=>$Hotel,
+            "messgae"=>"the Hotel is deleted",
+            "status"=>200,
         ]);
 
     }
     //To Update Hotell Inormtion
     public function updateHotel(Request $request){
         $request->validate([
-           "IdOfHotel"=>"required",
-            "name"=>"required",
-            "location"=>"required",
-            "description"=>"required",
-            "Comforts"=>"required",
-            "Basicphoto"=>"required",
-            // "Roomphoto1"=>"required",
-            // "Roomphoto2"=>"required",
-            // "Roomphoto3"=>"required",
-            "food"=>"required",
-            "comforts"=>"required",
-            "safe"=>"required",
-            "Rate"=>"required",
-            "service"=>"required",
+            "IdOfHotel"=>"required",
+            "name"=>"nullable",
+            "location"=>"nullable",
+            'nameOfCountry'=>'nullable',
+            "description"=>"nullable",
+            "Comforts"=>"nullable",
+            "Basicphoto"=>"nullable",
+            "Roomphoto1"=>"nullable",
+            "Roomphoto2"=>"nullable",
+            "Roomphoto3"=>"nullable",
+            "food"=>"nullable",
+            "comforts"=>"nullable",
+            "safe"=>"nullable",
+            "Rate"=>"nullable",
+            "service"=>"nullable",
         ]);
         $Hotel=hotel::where('id',$request->IdOfHotel)->first();
-        if(!$Hotel){
+
+
+         if(!$Hotel){
             return response()->json([
-                "status"=>"200",
-                "messgae"=>"the company not found "
-            ]);}
-        else{
-            hotel::where('id',$request->IdOfHotel)->
-        update([
-            'name'=>$request->name,
-            'location'=>$request->location,
-            'description'=>$request->description,
-            'Comforts'=>$request->Comforts,
-            'food'=>$request->food,
-            'safe'=>$request->safe,
-            'Rate'=>$request->Rate,
-            'Basicphoto'=>$request->Basicphoto,
-            // 'Roomphoto1'=>$request->Roomphoto1,
-            // 'Roomphoto2'=>$request->Roomphoto2,
-            // 'Roomphoto3'=>$request->Roomphoto3,
-            'service'=>$request->service,
-        ]) ;
+                'data'=>[],
+                "messgae"=>"the hotel not found ",
+                "status"=>404,
+            ]);
         }
+        $countryinfo=Contrey::query()->where('id',$Hotel->Country_id)->first();
+        $contry_id=Contrey::query()->where('name',$request->nameOfCountry??$countryinfo->name)->first();
+
+        if(!$contry_id){
+            return response()->json([
+                'data'=>[],
+                "message"=>"the country not found",
+                "status"=>404,
+          ]);
+        }
+
+
+        $hotelexist=Hotel::query()->where('name',$request->name)
+        ->where('location',$request->location)
+        ->where('Country_id',$contry_id->id)
+        ->first();
+        if($hotelexist){
+            return response()->json([
+                'data'=>[],
+                "message"=>"the hotel is exist before at the same place",
+                "status"=>200,
+          ]);
+        }
+
+        if ($request->hasFile('Basicphoto')) {
+            $oldPhotoPathbasic = str_replace('/storage', '', $Hotel->Basicphoto);
+            if (Storage::disk('public')->exists($oldPhotoPathbasic)) {
+                Storage::disk('public')->delete($oldPhotoPathbasic);
+            }
+
+            $image = $request->file('Basicphoto');
+            $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+            Storage::disk('public')->put($fileName, file_get_contents($image));
+            $photoPathbsic = Storage::url($fileName);
+        } else {
+
+            $photoPathbsic = $Hotel->Basicphoto;
+        }
+
+        if ($request->hasFile('Roomphoto1')) {
+            $oldPhotoPath1 = str_replace('/storage', '', $Hotel->Roomphoto1);
+            if (Storage::disk('public')->exists($oldPhotoPath1)) {
+                Storage::disk('public')->delete($oldPhotoPath1);
+            }
+
+            $image = $request->file('Roomphoto1');
+            $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+            Storage::disk('public')->put($fileName, file_get_contents($image));
+            $photoPath1 = Storage::url($fileName);
+        } else {
+
+            $photoPath1 = $Hotel->Roomphoto1;
+        }
+        if ($request->hasFile('Roomphoto2')) {
+            $oldPhotoPath2 = str_replace('/storage', '', $Hotel->Roomphoto2);
+            if (Storage::disk('public')->exists($oldPhotoPath2)) {
+                Storage::disk('public')->delete($oldPhotoPath2);
+            }
+
+            $image = $request->file('Roomphoto2');
+            $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+            Storage::disk('public')->put($fileName, file_get_contents($image));
+            $photoPath2 = Storage::url($fileName);
+        } else {
+
+            $photoPath2 = $Hotel->Roomphoto2;
+        }
+        if ($request->hasFile('Roomphoto3')) {
+            $oldPhotoPath3 = str_replace('/storage', '', $Hotel->Roomphoto3);
+            if (Storage::disk('public')->exists($oldPhotoPath3)) {
+                Storage::disk('public')->delete($oldPhotoPath3);
+            }
+
+            $image = $request->file('Roomphoto3');
+            $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+            Storage::disk('public')->put($fileName, file_get_contents($image));
+            $photoPath3 = Storage::url($fileName);
+        } else {
+
+            $photoPath3 = $Hotel->Roomphoto3;
+        }
+
+        hotel::where('id',$request->IdOfHotel)->
+        update([
+            'name'=>$request->name??$Hotel->name,
+            'location'=>$request->location??$Hotel->location,
+            'Country_id'=>$contry_id->id??$Hotel->Country_id,
+            'description'=>$request->description??$Hotel->description,
+            'comforts'=>$request->Comforts??$Hotel->comforts,
+            'food'=>$request->food??$Hotel->food,
+            'safe'=>$request->safe??$Hotel->safe,
+            'Rate'=>$request->Rate??$Hotel->Rate,
+            'Basicphoto'=>$photoPathbsic,
+            'Roomphoto1'=>$photoPath1,
+            'Roomphoto2'=>$photoPath2,
+            'Roomphoto3'=>$photoPath3,
+            'service'=>$request->service??$Hotel->service,
+        ]) ;
+
+        $hotelinfo=hotel::query()->where('id',$request->IdOfHotel)->with(['contrey'])->first();
+
         return response()->json([
-            "status"=>"200",
-            "messgae"=>"the company Informatino is Update"
+            'data'=>$hotelinfo,
+            "messgae"=>"the hotel Informatino is Update",
+            "status"=>200,
         ]);
     }
 }
