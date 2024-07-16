@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\expertcontroller;
 use App\Http\Controllers\Admin\flighttripcontroller;
 use App\Http\Controllers\Admin\hotelcontroller;
 use App\Http\Controllers\Admin\profilecontroller as AdminProfilecontroller;
+use App\Http\Controllers\Admin\RestaurantController;
 use App\Http\Controllers\Admin\touristplacecontroller;
 use App\Http\Controllers\client\activatycontroller as ClientActivatycontroller;
 use App\Http\Controllers\client\airplanecontroller as ClientAirplanecontroller;
@@ -20,6 +21,7 @@ use App\Http\Controllers\client\expertcontroller as ClientExpertcontroller;
 use App\Http\Controllers\client\flighttripcontroller as ClientFlighttripcontroller;
 use App\Http\Controllers\client\hotelcontroller as ClientHotelcontroller;
 use App\Http\Controllers\client\profilecontroller;
+use App\Http\Controllers\client\RestaurantController as ClientRestaurantController;
 use App\Http\Controllers\client\touristplacecontroller as ClientTouristplacecontroller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -76,6 +78,12 @@ Route::post('inputHotelInformation',[hotelcontroller::class,'inputHotelInformati
 Route::post('DropHotel',[hotelcontroller::class,'DropHotel']);
 Route::post('updateHotel',[hotelcontroller::class,'updateHotel']);
 Route::get('gethotels',[hotelcontroller::class,'gethotels']);
+
+//admin Resturant
+Route::get('getrestaurant',[RestaurantController::class,'getrestaurant']);
+Route::post('inputrestaurant',[RestaurantController::class,'inputrestaurant']);
+Route::post('deleterestaurant',[RestaurantController::class,'deleterestaurant']);
+Route::post('restaurantupdate',[RestaurantController::class,'restaurantupdate']);
 
 // admin tourist place
 Route::post('inputInoformationTouirstPlace',[touristplacecontroller::class,'inputInoformationTouirstPlace']);
@@ -142,8 +150,16 @@ Route::post('getCompanyORCountryWithTrips',[ClientFlighttripcontroller::class,'g
 
 // client inforamtion hotell
 Route::post('SearchAboutHotel',[ClientHotelcontroller::class,'SearchAboutHotel']);
-Route::post('ReturnCountreyWithHotel',[ClientHotelcontroller::class,'ReturnCountreyWithHotel']);
-Route::post('ReserveRoom',[ClientHotelcontroller::class,'ReserveRoom']);
+Route::get('gethotelsforclient',[ClientHotelcontroller::class,'gethotelsforclient']);
+
+// Route::post('ReturnCountreyWithHotel',[ClientHotelcontroller::class,'ReturnCountreyWithHotel']);
+// Route::post('ReserveRoom',[ClientHotelcontroller::class,'ReserveRoom']);
+
+Route::get('getrestaurantforclient',[ClientRestaurantController::class,'getrestaurantforclient']);
+Route::post('SearchAboutRestaurant',[ClientRestaurantController::class,'SearchAboutRestaurant']);
+
+
+
 
 
 // client tourist place

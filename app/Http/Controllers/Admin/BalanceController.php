@@ -105,10 +105,12 @@ class BalanceController extends Controller
 
     public function UpdateClientAccount(Request $request){
         $request->validate([
+            'OperationType'=>'required',
             'idaccount'=>'nullable',
             'Balance'=>'nullable'
         ]);
         $useraccount=balance::query()->where('id',$request->idaccount)->first();
+
         if(!$useraccount){
            return response()->json([
             'data'=>[],
@@ -116,10 +118,26 @@ class BalanceController extends Controller
             'status'=>404
             ],404);
         }
+        if($request->OperationType=='Fill'){
             $useraccount->update([
-                'balance'=>$request->Balance??$useraccount->balance
+                'balance'=>($request->Balance+$useraccount->balance)??$useraccount->balance
             ]);
+        }
+
+        if($request->OperationType=='WithDraw'){
+            $useraccount->update([
+                'balance'=>($useraccount->balance-$request->Balance)??$useraccount->balance
+            ]);
+
+            if($useraccount->balance < 0){
+                $useraccount->update([
+                    'balance'=> 0
+                ]);
+            }
+        }
+
             return response()->json([
+
                 'data'=>$useraccount,
                 'message'=>'Client Account balance updated successfuly',
                 'status'=>200

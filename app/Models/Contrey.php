@@ -23,6 +23,9 @@ class Contrey extends Model
     public function Hotels(){
         return $this->hasMany('App\Models\Hotel','Country_id');
     }
+    public function restaurent(){
+        return $this->hasMany('App\Models\restaurant','Country_id');
+    }
     public function TouristPlaces(){
         return $this->hasMany('App\Models\touristPlace','Country_id');
     }
