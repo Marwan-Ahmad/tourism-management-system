@@ -30,6 +30,57 @@ class RestaurantController extends Controller
         ]);
     }
 
+
+    public function SearchAboutRestaurantadmin(Request $request){
+        $request->validate([
+            "nameOfCountrey"=>"required",
+            "nameOfRestaurant"=>"required"
+        ]);
+         $idcountry=Contrey::query()->where('name',$request->nameOfCountrey)->first();
+         if(!$idcountry){
+            return response()->json([
+                "data"=>[],
+                'message'=>"not found any country realeted with this name",
+                "status"=>404,
+            ],404);
+         }
+        $restaurantsearch=restaurant::query()->where('Country_id',$idcountry->id)->where('RestaurantName',$request->nameOfRestaurant)->get();
+        if($restaurantsearch->count()<=0){
+            return response()->json([
+                "data"=>[],
+                'message'=>"not found any Restaurant with this name",
+                "status"=>404,
+            ],404);
+        }
+
+        $formatedresponse=$restaurantsearch->map(function($restaurantsearch){
+            return [
+                'id'=>$restaurantsearch->id,
+                    'RestaurantName'=>$restaurantsearch->RestaurantName,
+                    'location'=>$restaurantsearch->location,
+                    "PhoneOFRestaurant"=>$restaurantsearch->PhoneOFRestaurant,
+                    'description'=>$restaurantsearch->description,
+                    'photo' => $restaurantsearch->photo,
+                    "food"=>$restaurantsearch->food,
+                    "service"=>$restaurantsearch->service,
+                    "comforts"=>$restaurantsearch->comforts,
+                    "safe"=>$restaurantsearch->safe,
+                    "Rate"=>$restaurantsearch->Rate,
+                    "opening_hours"=> $restaurantsearch->opening_hours,
+                    "closing_hours"=> $restaurantsearch->closing_hours,
+                    'contreyname'=>$restaurantsearch->contrey->name,
+                    'contreyphoto' => $restaurantsearch->contrey->photo,
+                    'contreyRate'=>$restaurantsearch->contrey->Rate,
+            ];
+        });
+
+        return response()->json([
+            "data"=>$formatedresponse,
+            'message'=>'this the Restaurant with this search',
+            "status"=>200,
+        ]);
+    }
+
 public function inputrestaurant(Request $request){
 
     $request->validate([

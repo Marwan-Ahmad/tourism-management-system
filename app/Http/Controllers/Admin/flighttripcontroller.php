@@ -29,6 +29,63 @@ class flighttripcontroller extends Controller
                 }
             }
 
+            public function getCompanyORCountryWithTripsadmin(Request $request){
+                $request->validate([
+                    "CompanyORCountry"=>"required"
+                ]);
+
+               $country = Contrey::query()->where('name',$request->CompanyORCountry)->get();
+
+                if($country->count()>0){
+                    $country = Contrey::query()->where('name',$request->CompanyORCountry)->first();
+
+                    $tripwithcountry=Trip::query()->where('country_id',$country->id)->get();
+
+                    if($tripwithcountry->count()<=0){
+                        return response()->json([
+                            'data'=>[],
+                            'message'=>'not found any trips in this country',
+                            'status'=>404
+                        ],404);
+                    }
+
+                    return response()->json([
+                        'data'=>$tripwithcountry,
+                        'message'=>'There Are The Trips Via Country',
+                        'status'=>200
+                    ],200);
+                }
+
+
+                $company=FightCompany::query()->where('name',$request->CompanyORCountry)->get();
+                if($company->count()>0){
+                    $company=FightCompany::query()->where('name',$request->CompanyORCountry)->first();
+
+                    $tripwithcompany=Trip::query()->where('fight_company_id',$company->id)->get();
+
+                    if($tripwithcompany->count()<= 0){
+                        return response()->json([
+                            'data'=>[],
+                            'message'=>'not found any trips in this company',
+                            'status'=>404
+                        ],404);
+                    }
+
+                    return response()->json([
+                        'data'=>$tripwithcompany,
+                        'message'=>'There Are The Trips Via company',
+                        'status'=>200
+                    ],200);
+
+                }
+
+                return response()->json([
+                    'data'=>[],
+                    'message'=>'Not Found Any Trip With Realated Search',
+                    'status'=>404
+                ],404);
+           }
+
 
     //To Input Flight Trip In The App
     public function InputFlightTrip(Request $request){

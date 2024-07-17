@@ -398,7 +398,7 @@ class flighttripcontroller extends Controller
 
             $tripwithcountry=Trip::query()->where('country_id',$country->id)->get();
 
-            if(!$tripwithcountry){
+            if($tripwithcountry->count()<=0){
                 return response()->json([
                     'data'=>[],
                     'message'=>'not found any trips in this country',
@@ -420,7 +420,7 @@ class flighttripcontroller extends Controller
 
             $tripwithcompany=Trip::query()->where('fight_company_id',$company->id)->get();
 
-            if(!$tripwithcompany){
+            if($tripwithcompany->count()<=0){
                 return response()->json([
                     'data'=>[],
                     'message'=>'not found any trips in this company',

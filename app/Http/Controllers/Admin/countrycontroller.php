@@ -31,6 +31,29 @@ class countrycontroller extends Controller
        }
 }
 
+public function SearchAboutContreyadmin(Request $request){
+    $request->validate([
+        "name"=>"required",
+    ]);
+    $CountriesNames= Contrey::where('name',$request->name)->first();
+    if(!$CountriesNames){
+        return response()->json([
+            "data"=>$CountriesNames,
+            'message'=>'not found any country with this name',
+            "status"=>404,
+        ]);
+    }
+    else{
+
+
+    return response()->json([
+        "data"=>$CountriesNames,
+        'message'=>' The country with this name',
+        "status"=>200,
+    ]);
+}
+}
+
     // To input Country In The App
 
     public function InputCountry(Request $request){

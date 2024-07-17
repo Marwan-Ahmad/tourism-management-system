@@ -59,12 +59,14 @@ Route::get('ReturnCountreyForAdmin',[countrycontroller::class,'ReturnCountrey'])
 Route::post('InputCountry',[countrycontroller::class,'InputCountry']);
 Route::post('DropCountry',[countrycontroller::class,'DropCountry']);
 Route::post('UpdateInformationContrey',[countrycontroller::class,'UpdateInformationContrey']);
+Route::post('SearchAboutContreyadmin',[countrycontroller::class,'SearchAboutContreyadmin']);
 
 // admin airplane
 Route::get('getcompany',[airplanecontroller::class,'getcompany']);
 Route::post('InputAirPlaneCompany',[airplanecontroller::class,'InputAirPlaneCompany']);
 Route::post('updateAirplaneCompany',[airplanecontroller::class,'updateAirplaneCompany']);
 Route::post('DropAirplaneCompany',[airplanecontroller::class,'DropAirplaneCompany']);
+Route::post('SearchAboutAirPlaneCompanyadmin',[airplanecontroller::class,'SearchAboutAirPlaneCompanyadmin']);
 
 
 // admin flight trip
@@ -72,11 +74,13 @@ Route::get('gettrip',[flighttripcontroller::class,'gettrip']);
 Route::post('InputFlightTrip',[flighttripcontroller::class,'InputFlightTrip']);
 Route::post('DropFlightTrip',[flighttripcontroller::class,'DropFlightTrip']);
 Route::post('UpdateFlightTrip',[flighttripcontroller::class,'UpdateFlightTrip']);
+Route::post('getCompanyORCountryWithTripsadmin',[flighttripcontroller::class,'getCompanyORCountryWithTripsadmin']);
 
 // admin hotel
 Route::post('inputHotelInformation',[hotelcontroller::class,'inputHotelInformation']);
 Route::post('DropHotel',[hotelcontroller::class,'DropHotel']);
 Route::post('updateHotel',[hotelcontroller::class,'updateHotel']);
+Route::post('SearchAboutHoteladmin',[hotelcontroller::class,'SearchAboutHoteladmin']);
 Route::get('gethotels',[hotelcontroller::class,'gethotels']);
 
 //admin Resturant
@@ -84,6 +88,7 @@ Route::get('getrestaurant',[RestaurantController::class,'getrestaurant']);
 Route::post('inputrestaurant',[RestaurantController::class,'inputrestaurant']);
 Route::post('deleterestaurant',[RestaurantController::class,'deleterestaurant']);
 Route::post('restaurantupdate',[RestaurantController::class,'restaurantupdate']);
+Route::post('SearchAboutRestaurantadmin',[RestaurantController::class,'SearchAboutRestaurantadmin']);
 
 // admin tourist place
 Route::post('inputInoformationTouirstPlace',[touristplacecontroller::class,'inputInoformationTouirstPlace']);

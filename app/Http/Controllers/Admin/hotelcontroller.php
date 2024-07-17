@@ -30,6 +30,57 @@ class hotelcontroller extends Controller
 
     }
 
+    public function SearchAboutHoteladmin(Request $request){
+        $request->validate([
+            "nameOfCountrey"=>"required",
+            "nameOfHotel"=>"required"
+        ]);
+         $idcountry=Contrey::query()->where('name',$request->nameOfCountrey)->first();
+         if(!$idcountry){
+            return response()->json([
+                "data"=>[],
+                'message'=>"not found any country realeted with this name",
+                "status"=>404,
+            ],404);
+         }
+        $hotelsearch=Hotel::query()->where('Country_id',$idcountry->id)->where('name',$request->nameOfHotel)->get();
+        if($hotelsearch->count()<=0){
+            return response()->json([
+                "data"=>[],
+                'message'=>"not found any hotel with this name",
+                "status"=>404,
+            ],404);
+        }
+
+        $formatedresponse=$hotelsearch->map(function($hotelsearch){
+            return [
+                'id'=>$hotelsearch->id,
+                'name'=>$hotelsearch->name,
+                'location'=>$hotelsearch->location,
+                'description'=>$hotelsearch->description,
+                'Basicphoto' =>$hotelsearch->Basicphoto,
+                "Roomphoto1" => $hotelsearch->Roomphoto1,
+                "Roomphoto2" => $hotelsearch->Roomphoto2,
+                "Roomphoto3" => $hotelsearch->Roomphoto3,
+                "food"=>$hotelsearch->food,
+                "service"=>$hotelsearch->service,
+                "comforts"=>$hotelsearch->comforts,
+                "safe"=>$hotelsearch->safe,
+                "Rate"=>$hotelsearch->Rate,
+               // 'contreyid'=>$allhotels->contrey->id,
+                'contreyname'=>$hotelsearch->contrey->name,
+                'contreyphoto' => $hotelsearch->contrey->photo,
+                'contreyRate'=>$hotelsearch->contrey->Rate,
+            ];
+        });
+
+        return response()->json([
+            "data"=>$formatedresponse,
+            'message'=>'this the hotel with this search',
+            "status"=>200,
+        ]);
+    }
+
 
     //To Input Hotell
     public function inputHotelInformation(Request $request){

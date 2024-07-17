@@ -29,6 +29,28 @@ class airplanecontroller extends Controller
         }
     }
 
+     //Search About AirPlane
+     public function SearchAboutAirPlaneCompanyadmin(Request $request){
+        $request->validate([
+            "nameOfCompany"=>"required",
+            //"nameOfCountry"=>"required",
+        ]);
+        $CounterWithAirPlanes=FightCompany::query()->where('name',$request->nameOfCompany)->first();
+        if(!$CounterWithAirPlanes){
+            return response()->json([
+                "data"=>[],
+                'message'=>'not found',
+                "sattus"=>404,
+            ],404);
+        }
+
+        return response()->json([
+            "data"=>$CounterWithAirPlanes,
+            'message'=>'this is the company with your search',
+            "sattus"=>200,
+        ]);
+    }
+
 
 
      // To Input AirPlaneCompany
