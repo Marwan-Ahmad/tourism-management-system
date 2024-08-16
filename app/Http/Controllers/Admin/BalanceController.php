@@ -107,9 +107,20 @@ class BalanceController extends Controller
         $request->validate([
             'OperationType'=>'required',
             'idaccount'=>'nullable',
+            'email'=>'required',
             'Balance'=>'nullable'
         ]);
         $useraccount=balance::query()->where('id',$request->idaccount)->first();
+
+        $useremail = User::query()->where('email',$request->email)->first();
+
+        if(!$useremail){
+            return response()->json([
+                'data'=>[],
+                'message'=>'Client Account not found',
+                'status'=>200
+            ],200);
+        }
 
         if(!$useraccount){
            return response()->json([

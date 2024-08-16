@@ -15,5 +15,8 @@ class reserveTrip extends Model
     public function trip(){
         return $this->belongsTo('App\Models\Trip','fight_air_planes_id');
     }
+    public function user(){
+        return $this->belongsTo('App\Models\User','users_id');
+    }
 
 }

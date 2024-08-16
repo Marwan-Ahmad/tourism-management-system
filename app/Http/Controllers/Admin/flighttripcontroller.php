@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Contrey;
 use App\Models\FightCompany;
+use App\Models\reserveTrip;
 use App\Models\Trip;
 use Illuminate\Http\Request;
 
@@ -28,6 +29,26 @@ class flighttripcontroller extends Controller
                     ],200);
                 }
             }
+
+    public function getuserstrip(){
+        $userstrip=reserveTrip::query()->with(['user','trip'])->get();
+
+        if($userstrip->count()<=0){
+            return response()->json([
+                'data'=>[],
+                'message'=>'no one reserved any trip',
+                'status'=>200
+            ]);
+        }
+
+        return response()->json([
+            'data'=>$userstrip,
+            'message'=>'this the reserved trip in your app',
+            'status'=>200
+        ]);
+    }
+
+
 
             public function getCompanyORCountryWithTripsadmin(Request $request){
                 $request->validate([

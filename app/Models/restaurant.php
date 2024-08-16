@@ -22,6 +22,8 @@ class restaurant extends Model
         'closing_hours',
         'Country_id',
         'photo',
+        'x',
+        'y',
     ];
 
     protected $hidden=[

@@ -99,6 +99,8 @@ class hotelcontroller extends Controller
             "Roomphoto2"=>"required",
             "Roomphoto3"=>"required",
             "Rate"=>"required",
+            "x"=>"required",
+            "y"=>"required",
         ]);
         $Basicphoto = $request->file('Basicphoto');
         $fileName = uniqid().'.'.$Basicphoto->getClientOriginalExtension();
@@ -156,6 +158,8 @@ class hotelcontroller extends Controller
         $CompanyInformation->Roomphoto3= $Roomphoto3;
         $CompanyInformation->Country_id=$contry_id;
         $CompanyInformation->Rate=$request->Rate;
+        $CompanyInformation->x=$request->x;
+        $CompanyInformation->y=$request->y;
         $CompanyInformation->save();
 
         return response()->json([
@@ -224,6 +228,8 @@ class hotelcontroller extends Controller
             "safe"=>"nullable",
             "Rate"=>"nullable",
             "service"=>"nullable",
+            "x"=>"nullable",
+            "y"=>"nullable",
         ]);
         $Hotel=hotel::where('id',$request->IdOfHotel)->first();
 
@@ -332,6 +338,8 @@ class hotelcontroller extends Controller
             'Roomphoto2'=>$photoPath2,
             'Roomphoto3'=>$photoPath3,
             'service'=>$request->service??$Hotel->service,
+            'x'=>$request->x??$Hotel->x,
+            'y'=>$request->y??$Hotel->y,
         ]) ;
 
         $hotelinfo=hotel::query()->where('id',$request->IdOfHotel)->with(['contrey'])->first();

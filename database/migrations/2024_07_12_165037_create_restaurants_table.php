@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('opening_hours');
             $table->string('closing_hours');
             $table->string('photo');
+            $table->double('x');
+            $table->double('y');
             $table->foreignId('Country_id')->constrained('Country')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });

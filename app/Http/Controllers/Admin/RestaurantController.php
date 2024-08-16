@@ -96,7 +96,9 @@ public function inputrestaurant(Request $request){
         'Rate'=>'required',
         'opening_hours'=>'required',
         'closing_hours'=>'required',
-        'photo'=>'required'
+        'photo'=>'required',
+        'x'=>'required',
+        'y'=>'required'
     ]);
 
     $photo = $request->file('photo');
@@ -143,6 +145,8 @@ public function inputrestaurant(Request $request){
         'closing_hours'=>$request->closing_hours,
         'photo'=>$photo,
         'Country_id'=>$contry->id,
+        'x'=>$request->x,
+        'y'=>$request->y,
     ]);
 
     return response()->json([
@@ -194,7 +198,9 @@ public function restaurantupdate(Request $request){
         'Rate'=>'nullable',
         'opening_hours'=>'nullable',
         'closing_hours'=>'nullable',
-        'photo'=>'nullable'
+        'photo'=>'nullable',
+        'x'=>'nullable',
+        'y'=>'nullable'
     ]);
 
     $restaurantexist=restaurant::query()->where('id',$request->idrestaurant)->first();
@@ -258,7 +264,10 @@ public function restaurantupdate(Request $request){
             'opening_hours'=>$request->opening_hours??$restaurantexist->opening_hours,
             'closing_hours'=>$request->closing_hours??$restaurantexist->closing_hours,
             'photo'=>$photoPathbsic,
-            'Country_id'=>$contry_id->id??$countryinfo->id
+            'Country_id'=>$contry_id->id??$countryinfo->id,
+            'x'=>$request->x??$restaurantexist->x,
+            'y'=>$request->y??$restaurantexist->y,
+
         ]);
 
         $restaurantinfo=restaurant::query()->where('id',$request->idrestaurant)->first();

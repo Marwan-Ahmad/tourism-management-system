@@ -25,6 +25,8 @@ return new class extends Migration
             $table->String('comforts');
             $table->String('safe');
             $table->String('Rate');
+            $table->double('x');
+            $table->double('y');
             $table->foreignId('Country_id')->constrained('Country')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });

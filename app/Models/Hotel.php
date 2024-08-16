@@ -11,10 +11,10 @@ class Hotel extends Model
     use HasFactory;
     protected $table="hotel";
     protected $fillable=['name','location','description','Roomphoto2','Roomphoto3'
-    ,'food','service','safe','comforts','ٌRate','Basicphoto','Roomphoto1'];
+    ,'food','service','safe','comforts','ٌRate','Basicphoto','Roomphoto1','x','y'];
     public $timestamp=true;
     protected $hidden=['created_at','updated_at'];
-    
+
     public function contrey(){
         return $this->belongsTo('App\Models\Contrey','Country_id');
     }

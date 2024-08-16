@@ -71,6 +71,7 @@ Route::post('SearchAboutAirPlaneCompanyadmin',[airplanecontroller::class,'Search
 
 // admin flight trip
 Route::get('gettrip',[flighttripcontroller::class,'gettrip']);
+Route::get('getuserstrip',[flighttripcontroller::class,'getuserstrip']);
 Route::post('InputFlightTrip',[flighttripcontroller::class,'InputFlightTrip']);
 Route::post('DropFlightTrip',[flighttripcontroller::class,'DropFlightTrip']);
 Route::post('UpdateFlightTrip',[flighttripcontroller::class,'UpdateFlightTrip']);
